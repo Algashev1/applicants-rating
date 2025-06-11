@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgFor } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +13,13 @@ import { NgFor } from '@angular/common';
 export class App implements OnInit {
   protected title = 'frontend';
   institutes: { id: number; name: string }[] = [];
+  private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.http.get<{ id: number; name: string }[]>(
-      '/api/institutes' // относительный путь для production
+      `${this.apiUrl}/api/institutes`
     ).subscribe(data => {
       this.institutes = data;
     });

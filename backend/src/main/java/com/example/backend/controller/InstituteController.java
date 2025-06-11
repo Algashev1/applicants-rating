@@ -2,21 +2,21 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Institute;
 import com.example.backend.repository.InstituteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/institutes")
-@CrossOrigin(origins = "*")
 public class InstituteController {
-    private final InstituteRepository repository;
 
-    public InstituteController(InstituteRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private InstituteRepository instituteRepository;
 
     @GetMapping
-    public List<Institute> getAllInstitutes() {
-        return repository.findAll();
+    public ResponseEntity<List<Institute>> getAllInstitutes() {
+        return ResponseEntity.ok(instituteRepository.findAll());
     }
 }
