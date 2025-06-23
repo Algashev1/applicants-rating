@@ -1,0 +1,129 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.institutes-list {
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+}
+
+.institute-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.institute-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.institute-card:hover {
+  transform: translateY(-5px);
+}
+
+.institute-card h2 {
+  color: #2c3e50;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.institute-card p {
+  color: #7f8c8d;
+  font-size: 1em;
+}
+
+/* --- Хедер и меню --- */
+.main-navbar {
+  background: #1976d2;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 32px;
+  padding: 0;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 32px;
+}
+
+.navbar-logo {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+  padding: 0 12px;
+}
+
+.navbar-logo:hover {
+  color: #e3eaf6;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 28px;
+}
+
+.navbar-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.08rem;
+  font-weight: 500;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  transition: border 0.2s, color 0.2s;
+  position: relative;
+  letter-spacing: 0.5px;
+}
+
+.navbar-links a.active,
+.navbar-links a:hover {
+  border-bottom: 2px solid #fff;
+  color: #e3eaf6;
+}
+
+@media (max-width: 700px) {
+  .navbar-container {
+    flex-direction: column;
+    height: auto;
+    padding: 12px;
+    gap: 8px;
+  }
+  .navbar-links {
+    gap: 16px;
+  }
+  .navbar-logo {
+    font-size: 1.2rem;
+    padding: 0;
+  }
+}
+
+/* Добавим адаптивность */
+@media (max-width: 768px) {
+  .institute-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .container {
+    padding: 10px;
+  }
+}

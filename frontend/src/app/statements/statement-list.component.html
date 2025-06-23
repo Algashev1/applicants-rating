@@ -1,0 +1,102 @@
+<div class="container">
+  <button (click)="goBack()">Назад</button>
+  <h1>Заявления для {{ fullName }}</h1>
+
+  <div *ngIf="availableDates.length > 0" style="margin-bottom: 24px">
+    <label for="importDateSelect" style="font-weight: 600">Дата импорта:</label>
+    <select id="importDateSelect" [(ngModel)]="selectedDate" (change)="onDateChange($event)">
+      <option *ngFor="let d of availableDates" [value]="d">{{ d }}</option>
+    </select>
+  </div>
+
+  <!-- Блок результатов ЕГЭ -->
+  <div *ngIf="filteredStatements.length > 0" style="margin-bottom: 24px">
+    <ng-container *ngIf="getEgeResults(filteredStatements[0]) as ege">
+      <div *ngIf="ege.length > 0" style="display: flex; flex-wrap: wrap; gap: 24px; align-items: center">
+        <span style="font-weight: 600">Результаты ЕГЭ:</span>
+        <ng-container *ngFor="let res of ege">
+          <span
+            >{{ res.label }}: <b>{{ res.value }}</b></span
+          >
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Таблицы для бюджет/договор, как раньше, но используйте filteredStatements вместо statements -->
+  <ng-container *ngIf="budgetStatements.length > 0">
+    <h2>Бюджет</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Вид приёма</th>
+            <th>Приоритет</th>
+            <th>Сквозной приоритет</th>
+            <th>Направление подготовки</th>
+            <th>Целевой приём</th>
+            <th>Отдельная квота</th>
+            <th>Особая квота</th>
+            <th>Дата подачи</th>
+            <th>Сумма баллов</th>
+            <th>Сумма баллов за инд. достижения (преимущество)</th>
+            <th>Вид возмещения затрат</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of budgetStatements">
+            <td>{{ s.admissionType }}</td>
+            <td>{{ s.priority }}</td>
+            <td>{{ s.overallPriority }}</td>
+            <td>{{ s.trainingDirection }}</td>
+            <td>{{ s.targetedAdmission }}</td>
+            <td>{{ s.separateQuota }}</td>
+            <td>{{ s.specialQuota }}</td>
+            <td>{{ s.submissionDate }}</td>
+            <td>{{ s.totalScore }}</td>
+            <td>{{ s.individualAchievementAdvantageTotal }}</td>
+            <td>{{ s.costReimbursementType }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="contractStatements.length > 0">
+    <h2>По договору</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Вид приёма</th>
+            <th>Приоритет</th>
+            <th>Сквозной приоритет</th>
+            <th>Направление подготовки</th>
+            <th>Целевой приём</th>
+            <th>Отдельная квота</th>
+            <th>Особая квота</th>
+            <th>Дата подачи</th>
+            <th>Сумма баллов</th>
+            <th>Сумма баллов за инд. достижения (преимущество)</th>
+            <th>Вид возмещения затрат</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of contractStatements">
+            <td>{{ s.admissionType }}</td>
+            <td>{{ s.priority }}</td>
+            <td>{{ s.overallPriority }}</td>
+            <td>{{ s.trainingDirection }}</td>
+            <td>{{ s.targetedAdmission }}</td>
+            <td>{{ s.separateQuota }}</td>
+            <td>{{ s.specialQuota }}</td>
+            <td>{{ s.submissionDate }}</td>
+            <td>{{ s.totalScore }}</td>
+            <td>{{ s.individualAchievementAdvantageTotal }}</td>
+            <td>{{ s.costReimbursementType }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

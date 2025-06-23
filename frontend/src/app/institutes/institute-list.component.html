@@ -1,0 +1,6 @@
+<div class="institutes-list">
+  <h1>Институты</h1>
+  <div class="institute-card" *ngFor="let institute of institutes" (click)="openInstitute(institute)">
+    <span>{{ institute.name }}</span>
+  </div>
+</div>

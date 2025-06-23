@@ -1,0 +1,18 @@
+.institutes-list {
+  max-width: 700px;
+  margin: 40px auto;
+}
+.institute-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 18px 28px;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.institute-card:hover {
+  background: #e3eaf6;
+}

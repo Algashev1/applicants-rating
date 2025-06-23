@@ -1,0 +1,19 @@
+<div class="directions-list">
+  <h2>Направления {{ instituteName }}</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Название направления</th>
+        <th>Всего заявлений (последняя дата)</th>
+        <th>Приоритет 1</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let dir of directions" (click)="openDirection(dir)">
+        <td>{{ dir.name }}</td>
+        <td>{{ dir.totalStatements }}</td>
+        <td>{{ dir.priorityOneStatements }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -23,6 +23,9 @@ public class DatabaseConfig {
     @Value("${DB_NAME:applicants_db}")
     private String dbName;
 
+    @Value("${DB_HOST:localhost}")
+    private String dbHost;
+
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -30,7 +33,7 @@ public class DatabaseConfig {
         
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/" + dbName);
+        dataSource.setUrl("jdbc:postgresql://" + dbHost + ":5432/" + dbName);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         
@@ -38,18 +41,16 @@ public class DatabaseConfig {
     }
 
     private void createDatabaseIfNotExists() {
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/postgres",
-                username,
-                password)) {
-            
+        String url = "jdbc:postgresql://" + dbHost + ":5432/postgres";
+        
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
             try (Statement statement = connection.createStatement()) {
-                // Check if database exists
-                String sql = "SELECT 1 FROM pg_database WHERE datname = '" + dbName + "'";
-                boolean dbExists = statement.executeQuery(sql).next();
+                // Проверяем существование базы данных
+                String checkDb = "SELECT 1 FROM pg_database WHERE datname = '" + dbName + "'";
+                boolean dbExists = statement.executeQuery(checkDb).next();
 
                 if (!dbExists) {
-                    // Create database if it doesn't exist
+                    // Создаем базу данных если она не существует
                     statement.execute("CREATE DATABASE " + dbName);
                 }
             }

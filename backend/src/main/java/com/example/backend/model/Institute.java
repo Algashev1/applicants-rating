@@ -12,10 +12,14 @@ public class Institute {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String location;
+
     public Institute() {}
 
-    public Institute(String name) {
+    public Institute(String name, String location) {
         this.name = name;
+        this.location = location;
     }
 
     public Long getId() {
@@ -32,5 +36,13 @@ public class Institute {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

@@ -1,27 +1,23 @@
-import { NgFor } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { environment } from '../environments/environment';
+import { HttpClientModule } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NgFor, HttpClientModule],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [RouterLink, RouterOutlet, HttpClientModule, RouterModule],
+  template: `
+    <nav class="main-navbar">
+  <div class="navbar-container">
+    <a routerLink="/" class="navbar-logo">Рейтинг абитуриентов</a>
+    <div class="navbar-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Институты</a>
+      <a routerLink="/abiturients" routerLinkActive="active">Абитуриенты</a>
+      <a routerLink="/upload" routerLinkActive="active">Загрузка файлов</a>
+    </div>
+  </div>
+</nav>
+<router-outlet></router-outlet>
+  `
 })
-export class App implements OnInit {
-  protected title = 'frontend';
-  institutes: { id: number; name: string }[] = [];
-  private apiUrl = environment.apiUrl;
-
-  constructor(private http: HttpClient) { }
-
-  ngOnInit(): void {
-    this.http.get<{ id: number; name: string }[]>(
-      `${this.apiUrl}/api/institutes`
-    ).subscribe(data => {
-      this.institutes = data;
-    });
-  }
-}
+export class App { }

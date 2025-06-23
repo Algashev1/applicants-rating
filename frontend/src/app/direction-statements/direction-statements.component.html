@@ -1,0 +1,35 @@
+<div class="container">
+  <h2>Заявления по направлению: {{ directionName }}</h2>
+  <label>
+    <input type="checkbox" [(ngModel)]="onlyPriorityOne" (change)="loadStatements()" />
+    Только приоритет 1
+  </label>
+  <div *ngIf="newPersonalNumberSet.size > 0" class="new-statements-info">Новых заявлений: {{ newPersonalNumberSet.size }}</div>
+  <div class="table-wrapper" *ngIf="currentStatements.length > 0; else noData">
+    <table>
+      <thead>
+        <tr>
+          <th>Вид приёма</th>
+          <th>ФИО</th>
+          <th>Личный номер</th>
+          <th>Сумма баллов ЕГЭ</th>
+          <th>Сумма баллов за инд. достижения</th>
+          <th>Приоритет</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of currentStatements" [ngClass]="{ 'new-statement': newPersonalNumberSet.has(s.personalNumber) }">
+          <td>{{ s['admissionType'] }}</td>
+          <td>{{ s['fullName'] }}</td>
+          <td>{{ s['personalNumber'] }}</td>
+          <td>{{ s['totalScore'] }}</td>
+          <td>{{ s['individualAchievementTotal'] }}</td>
+          <td>{{ s['priority'] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noData>
+    <p>Нет данных для отображения.</p>
+  </ng-template>
+</div>

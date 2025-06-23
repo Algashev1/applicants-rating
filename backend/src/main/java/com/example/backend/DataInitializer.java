@@ -12,8 +12,8 @@ public class DataInitializer {
     CommandLineRunner initDatabase(InstituteRepository repository) {
         return args -> {
             if (repository.count() == 0) {
-                repository.save(new Institute("Институт математики"));
-                repository.save(new Institute("Институт физики"));
+                // repository.save(new Institute("Институт математики"));
+                // repository.save(new Institute("Институт физики"));
             }
         };
     }
