@@ -35,6 +35,9 @@ export class DirectionStatementsComponent implements OnInit {
   disappearedPersonalNumbers: { [key: string]: Set<string> } = {};
   showDisappeared: { [key: string]: boolean } = {};
 
+  availableDates: string[] = [];
+  selectedDate: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -44,43 +47,54 @@ export class DirectionStatementsComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.directionName = params.get('directionName') || '';
-      this.loadStatements();
+      this.fetchAvailableDates();
     });
   }
 
-  loadStatements() {
-    this.http.get<any>(`${this.apiUrl}/api/statements/direction/${encodeURIComponent(this.directionName)}/with-previous?onlyPriorityOne=${this.onlyPriorityOne}`)
-      .subscribe(data => {
-        this.currentStatements = data.current.sort((a: any, b: any) => (Number(b.totalScore) || 0) - (Number(a.totalScore) || 0));
-        this.previousStatements = data.previous;
-
-        this.groupedCurrent = {};
-        this.groupedPrevious = {};
-        this.newPersonalNumbers = {};
-        this.disappearedPersonalNumbers = {};
-
-        for (const type of this.competitionTypes) {
-          this.groupedCurrent[type.key] = this.currentStatements.filter(s => s.admissionType === type.key);
-          this.groupedPrevious[type.key] = this.previousStatements.filter(s => s.admissionType === type.key);
-
-          const prevSet = new Set(this.groupedPrevious[type.key].map(s => s.personalNumber));
-          const currSet = new Set(this.groupedCurrent[type.key].map(s => s.personalNumber));
-
-          // Новые заявления
-          this.newPersonalNumbers[type.key] = new Set(
-            this.groupedCurrent[type.key]
-              .filter(s => !prevSet.has(s.personalNumber))
-              .map(s => s.personalNumber)
-          );
-
-          // Пропавшие заявления
-          this.disappearedPersonalNumbers[type.key] = new Set(
-            this.groupedPrevious[type.key]
-              .filter(s => !currSet.has(s.personalNumber))
-              .map(s => s.personalNumber)
-          );
-        }
+  fetchAvailableDates() {
+    this.http.get<string[]>(`${this.apiUrl}/api/statements/dates`)
+      .subscribe(dates => {
+        this.availableDates = dates;
+        this.selectedDate = dates[dates.length - 1]; // по умолчанию последняя (самая свежая)
+        this.loadStatements();
       });
+  }
+
+  loadStatements() {
+    this.http.get<any>(
+      `${this.apiUrl}/api/statements/direction/${encodeURIComponent(this.directionName)}/with-previous?onlyPriorityOne=${this.onlyPriorityOne}&date=${this.selectedDate}`
+    ).subscribe(data => {
+      this.currentStatements = data.current.sort((a: any, b: any) => (Number(b.totalScore) || 0) - (Number(a.totalScore) || 0));
+      this.previousStatements = data.previous;
+
+      this.groupedCurrent = {};
+      this.groupedPrevious = {};
+      this.newPersonalNumbers = {};
+      this.disappearedPersonalNumbers = {};
+
+      for (const type of this.competitionTypes) {
+        this.groupedCurrent[type.key] = this.currentStatements.filter(s => s.admissionType === type.key);
+        this.groupedPrevious[type.key] = this.previousStatements.filter(s => s.admissionType === type.key);
+
+        const prevSet = new Set(this.groupedPrevious[type.key].map(s => s.personalNumber));
+        const currSet = new Set(this.groupedCurrent[type.key].map(s => s.personalNumber));
+
+        // Новые заявления
+        this.newPersonalNumbers[type.key] = new Set(
+          this.groupedCurrent[type.key]
+            .filter(s => !prevSet.has(s.personalNumber))
+            .map(s => s.personalNumber)
+        );
+
+        // Пропавшие заявления
+        this.disappearedPersonalNumbers[type.key] = new Set(
+          this.groupedPrevious[type.key]
+            .filter(s => !currSet.has(s.personalNumber))
+            .map(s => s.personalNumber)
+        );
+      }
+      console.log(this.disappearedPersonalNumbers);
+    });
   }
 
   get totalNewStatements(): number {

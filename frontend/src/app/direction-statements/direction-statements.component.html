@@ -1,18 +1,25 @@
 <div class="container">
   <button class="back-btn" (click)="goBack()">&larr; Назад к списку направлений</button>
   <h2>Заявления по направлению: {{ directionName }}</h2>
+  <div class="date-select-block" style="margin-bottom: 18px">
+    <label for="date-select">Дата:</label>
+    <select id="date-select" [(ngModel)]="selectedDate" (ngModelChange)="loadStatements()">
+      <option *ngFor="let d of availableDates" [value]="d">{{ d }}</option>
+    </select>
+  </div>
+
   <label>
     <input type="checkbox" [(ngModel)]="onlyPriorityOne" (change)="loadStatements()" />
     Только приоритет 1
   </label>
 
   <div *ngIf="totalNewStatements > 0" class="new-statements-info" style="font-size: 1.1em">Всего новых заявлений: {{ totalNewStatements }}</div>
-  <div *ngIf="totalDisappearedStatements > 0" class="new-statements-info" style="color: #d32f2f">Пропавших заявлений: {{ totalDisappearedStatements }}</div>
+  <div *ngIf="totalDisappearedStatements > 0" class="new-statements-info" style="color: #d32f2f">Всего пропавших заявлений: {{ totalDisappearedStatements }}</div>
 
   <div class="tabs">
     <button *ngFor="let type of competitionTypes; let i = index" [class.active]="selectedTab === i" (click)="selectedTab = i">
       {{ type.label }}
-      <span class="total-count">({{ groupedCurrent[type.key].length || 0 }})</span>
+      <span *ngIf="groupedCurrent[type.key]" class="total-count">({{ groupedCurrent[type.key].length || 0 }})</span>
       <span *ngIf="newPersonalNumbers[type.key] && newPersonalNumbers[type.key].size > 0" class="badge"> +{{ newPersonalNumbers[type.key].size }} </span>
       <span *ngIf="disappearedPersonalNumbers[type.key] && disappearedPersonalNumbers[type.key].size > 0" class="badge" style="background: #d32f2f; margin-left: 4px">
         -{{ disappearedPersonalNumbers[type.key].size }}

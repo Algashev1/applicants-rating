@@ -90,7 +90,7 @@ tr:hover {
   color: #1976d2;
   font-weight: 400;
   margin-left: 6px;
-  font-size: 0.95em;
+  font-size: 0.85em;
 }
 .tabs button.active .total-count {
   color: #fff;
@@ -109,4 +109,14 @@ tr:hover {
 .back-btn:hover {
   background: #1976d2;
   color: #fff;
+}
+.date-select-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+#date-select {
+  padding: 4px 10px;
+  font-size: 1em;
 }

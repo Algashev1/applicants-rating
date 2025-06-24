@@ -9,12 +9,16 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.time.LocalDate;
 import com.example.backend.model.Institute;
 import com.example.backend.model.TrainingDirection;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
 
 @Service
 public class StatementService {
@@ -22,6 +26,9 @@ public class StatementService {
     private final StatementRepository repository;
     private final InstituteRepository instituteRepository;
     private final TrainingDirectionRepository trainingDirectionRepository;
+
+    @Autowired
+    private StatementRepository statementRepository;
 
     public StatementService(
         StatementRepository repository,
@@ -301,16 +308,25 @@ public class StatementService {
         }
     }
 
-    public DirectionStatementsResponse getStatementsWithPrevious(String directionName, boolean onlyPriorityOne) {
-        String latestDate = repository.findMaxImportDate();
-        String prevDate = repository.findPrevImportDate(latestDate);
-        List<Statement> current = onlyPriorityOne
-            ? repository.findByTrainingDirectionAndImportDateAndPriorityOrderByTotalScoreDesc(directionName, latestDate, "1")
-            : repository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(directionName, latestDate);
-        List<Statement> previous = prevDate == null ? List.of() :
-            (onlyPriorityOne
-                ? repository.findByTrainingDirectionAndImportDateAndPriorityOrderByTotalScoreDesc(directionName, prevDate, "1")
-                : repository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(directionName, prevDate));
-        return new DirectionStatementsResponse(current, previous);
+    public Map<String, Object> getStatementsWithPrevious(String directionName, boolean onlyPriorityOne, String date) {
+        // Получаем текущие заявления за выбранную дату
+        List<Statement> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne);
+
+        // Получаем предыдущие заявления (например, за предыдущую дату)
+        String previousDate = statementRepository.findPreviousDate(date);
+        List<Statement> previous = previousDate != null
+            ? statementRepository.findByDirectionAndDate(directionName, previousDate, onlyPriorityOne)
+            : Collections.emptyList();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("current", current);
+        result.put("previous", previous);
+        return result;
+    }
+
+    public List<String> getAvailableDates() {
+        // Предполагается, что в таблице Statement есть поле типа LocalDate или Date, например, "createdDate"
+        // Получаем уникальные даты из базы, сортируем по возрастанию
+        return statementRepository.findDistinctDates();
     }
 }

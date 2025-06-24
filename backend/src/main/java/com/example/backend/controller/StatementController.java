@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/statements")
@@ -32,9 +33,16 @@ public class StatementController {
     }
 
     @GetMapping("/direction/{directionName}/with-previous")
-    public DirectionStatementsResponse getStatementsWithPrevious(
+    public Map<String, Object> getStatementsWithPrevious(
             @PathVariable String directionName,
-            @RequestParam(required = false, defaultValue = "false") boolean onlyPriorityOne) {
-        return statementService.getStatementsWithPrevious(directionName, onlyPriorityOne);
+            @RequestParam(required = false) boolean onlyPriorityOne,
+            @RequestParam(required = false) String date
+    ) {
+        return statementService.getStatementsWithPrevious(directionName, onlyPriorityOne, date);
+    }
+
+    @GetMapping("/dates")
+    public List<String> getAvailableDates() {
+        return statementService.getAvailableDates();
     }
 }

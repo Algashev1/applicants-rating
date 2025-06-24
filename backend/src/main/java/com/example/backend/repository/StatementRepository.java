@@ -32,4 +32,16 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
 
     @Query("SELECT max(s.importDate) FROM Statement s WHERE s.importDate < :latestDate")
     String findPrevImportDate(@Param("latestDate") String latestDate);
+
+    @Query("SELECT DISTINCT CAST(s.importDate AS string) FROM Statement s ORDER BY CAST(s.importDate AS string)")
+    List<String> findDistinctDates();
+
+    @Query("SELECT s FROM Statement s WHERE s.trainingDirection = :trainingDirection AND CAST(s.importDate AS string) = :date"
+         + " AND (:onlyPriorityOne = false OR s.priority = '1')")
+    List<Statement> findByDirectionAndDate(@Param("trainingDirection") String trainingDirection,
+                                           @Param("date") String date,
+                                           @Param("onlyPriorityOne") boolean onlyPriorityOne);
+
+    @Query(value = "SELECT DISTINCT CAST(import_date AS text) FROM statements WHERE CAST(import_date AS text) < :date ORDER BY import_date DESC LIMIT 1", nativeQuery = true)
+    String findPreviousDate(@Param("date") String date);
 }
