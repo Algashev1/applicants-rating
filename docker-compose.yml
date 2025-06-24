@@ -15,19 +15,19 @@ services:
     ports:
       - '8080:8080'
     depends_on:
-      - postgres
+      - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/applicants_db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=root
-      - DB_HOST=postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
 
-  postgres:
-    image: postgres:latest
+  db:
+    image: postgres:15
+    restart: always
     environment:
-      POSTGRES_DB: applicants_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
       - '5432:5432'
     volumes:

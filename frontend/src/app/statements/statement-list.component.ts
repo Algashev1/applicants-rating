@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface Statement {
   id: number;
@@ -39,7 +40,7 @@ export class StatementListComponent implements OnInit {
   contractStatements: Statement[] = [];
   availableDates: string[] = [];
   selectedDate: string = '';
-  private apiUrl = "http://localhost:8080";
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
