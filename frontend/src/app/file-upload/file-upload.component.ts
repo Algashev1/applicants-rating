@@ -27,6 +27,12 @@ export class FileUploadComponent implements OnInit {
     loading: boolean = false;
     private apiUrl = environment.apiUrl;
 
+    password = '';
+    accessGranted = false;
+    error = false;
+
+    private readonly correctPassword = '1234'; // Задайте нужный пароль
+
     constructor(private http: HttpClient) { }
 
     ngOnInit() {
@@ -79,5 +85,14 @@ export class FileUploadComponent implements OnInit {
     private loadFiles() {
         this.http.get<FileUpload[]>(`${this.apiUrl}/api/files`)
             .subscribe(files => this.files = files);
+    }
+
+    checkPassword() {
+        if (this.password === this.correctPassword) {
+            this.accessGranted = true;
+            this.error = false;
+        } else {
+            this.error = true;
+        }
     }
 }
