@@ -49,4 +49,64 @@ tr:hover {
   margin: 12px 0 8px 0;
   color: #388e3c;
   font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.table-block {
+  margin-bottom: 36px;
+}
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0 18px 0;
+}
+.tabs button {
+  background: #f1f5fa;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px 8px 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1976d2;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+}
+.tabs button.active {
+  background: #1976d2;
+  color: #fff;
+}
+.tabs .badge {
+  background: #43a047;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.tabs .total-count {
+  color: #1976d2;
+  font-weight: 400;
+  margin-left: 6px;
+  font-size: 0.95em;
+}
+.tabs button.active .total-count {
+  color: #fff;
+}
+.back-btn {
+  margin-bottom: 18px;
+  background: #f1f5fa;
+  color: #1976d2;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.back-btn:hover {
+  background: #1976d2;
+  color: #fff;
 }

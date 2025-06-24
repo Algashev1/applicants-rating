@@ -24,6 +24,7 @@ export class InstituteDirectionsComponent implements OnInit {
             .subscribe(data => {
                 this.directions = data.directions;
                 this.instituteName = data.instituteName;
+                this.directions = this.directions.sort((a, b) => a.name.localeCompare(b.name));
             });
     }
 

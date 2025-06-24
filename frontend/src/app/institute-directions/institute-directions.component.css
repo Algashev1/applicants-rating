@@ -30,12 +30,17 @@ th, td {
   text-align: center;
 }
 
+td {
+  text-align: left;
+}
+
 th {
   background: #1976d2;
   color: #fff;
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.5px;
+   text-align: left;
 }
 
 tr:nth-child(even) {
