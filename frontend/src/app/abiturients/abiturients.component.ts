@@ -45,8 +45,8 @@ export interface Abiturient {
             <tr *ngFor="let a of abiturients" (click)="openStatements(a)" style="cursor: pointer;">
               <td>{{ a.personalNumber }}</td>
               <td>{{ a.spCode }}</td>
-              <td>{{ a.benefits }}</td>
               <td>{{ a.gender }}</td>
+              <td>{{ a.benefits }}</td>
               <td>{{ a.foreignCitizenship ? 'Да' : 'Нет' }}</td>
             </tr>
           </tbody>
