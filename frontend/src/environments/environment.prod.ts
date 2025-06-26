@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: '/api' // используем относительный путь для проксирования через nginx
+    apiUrl: 'http://87.228.101.196'
 };
