@@ -8,10 +8,10 @@ import './abiturients.component.css'; // Если предпочтительне
 
 export interface Abiturient {
   id: number;
-  fullName: string;
   gender: string;
   birthDate: string;
   personalNumber: string;
+  spCode: string;
   benefits: string;
   contactPhone: string;
   homePhone: string;
@@ -28,33 +28,25 @@ export interface Abiturient {
       <div class="abiturients-container">
         <h1>Список абитуриентов</h1>
         <div class="search">
-          <input type="text" placeholder="Поиск по ФИО или личному номеру" [(ngModel)]="searchTerm" />
+          <input type="text" placeholder="Поиск по личному номеру или коду абитуриента" [(ngModel)]="searchTerm" />
           <button (click)="search()">Искать</button>
         </div>
         <table>
           <thead>
             <tr>
-              <th>ФИО</th>
               <th>Личный номер</th>
+              <th>Код абитуриента</th>
               <th>Пол</th>
               <th>Льготы</th>
-              <th>Контактный телефон</th>
-              <th>Домашний телефон</th>
-              <th>Мобильный телефон</th>
-              <th>E-mail</th>
               <th>Иностранное гражданство</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let a of abiturients" (click)="openStatements(a)" style="cursor: pointer;">
-              <td>{{ a.fullName }}</td>
               <td>{{ a.personalNumber }}</td>
-              <td>{{ a.gender }}</td>
+              <td>{{ a.spCode }}</td>
               <td>{{ a.benefits }}</td>
-              <td>{{ a.contactPhone }}</td>
-              <td>{{ a.homePhone }}</td>
-              <td>{{ a.mobilePhone }}</td>
-              <td>{{ a.email }}</td>
+              <td>{{ a.gender }}</td>
               <td>{{ a.foreignCitizenship ? 'Да' : 'Нет' }}</td>
             </tr>
           </tbody>
@@ -82,7 +74,7 @@ export class AbiturientsComponent implements OnInit {
   search() {
     if (this.searchTerm) {
       this.abiturients = this.abiturients.filter(a =>
-        a.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        a.spCode.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         a.personalNumber.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     } else {
@@ -91,6 +83,6 @@ export class AbiturientsComponent implements OnInit {
   }
 
   openStatements(abiturient: any) {
-    this.router.navigate(['/statements', abiturient.personalNumber, abiturient.fullName]);
+    this.router.navigate(['/statements', abiturient.personalNumber]);
   }
 }

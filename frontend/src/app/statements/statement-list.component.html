@@ -1,6 +1,8 @@
 <div class="container">
   <button (click)="goBack()">Назад</button>
-  <h1>Заявления для {{ fullName }}</h1>
+  <h1>Личный номер {{ personalNumber }}</h1>
+  <h1 *ngIf="spCode">Уникальный код {{ spCode }}</h1>
+  <h1 *ngIf="!spCode">Уникальный код не найден</h1>
 
   <div *ngIf="availableDates.length > 0" style="margin-bottom: 24px">
     <label for="importDateSelect" style="font-weight: 600">Дата импорта:</label>

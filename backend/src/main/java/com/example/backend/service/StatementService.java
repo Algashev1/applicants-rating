@@ -110,7 +110,7 @@ public class StatementService {
                     // Получаем ФИО абитуриента из нужной колонки (например, пусть это колонка 11)
                     String fullName = getCellValueAsString(row.getCell(1));
                     statement.setFullName(fullName);
-                    
+                    statement.setSpCode(getCellValueAsString(row.getCell(32)));
                     // 2) дата подачи заявления
                     statement.setSubmissionDate(getCellValueAsString(row.getCell(39)));
                     // 3) преимущественное право
@@ -256,11 +256,11 @@ public class StatementService {
                     // 76) Статус результатов ЕГЭ
                     // statement.setEgeStatus(getCellValueAsString(row.getCell(139)));
                     // 78) Баллы за индивидуальные достижения
-                    statement.setIndividualAchievementScore(getCellValueAsString(row.getCell(140)));
+                    // statement.setIndividualAchievementScore(getCellValueAsString(row.getCell(140)));
                     // 79) Сумма баллов за индивидуальные достижения
                     statement.setIndividualAchievementTotal(getCellValueAsString(row.getCell(141)));
                     // 80) Баллы за индивидуальные достижения, учитываемые как преимущество
-                    statement.setIndividualAchievementAdvantageScore(getCellValueAsString(row.getCell(142)));
+                    // statement.setIndividualAchievementAdvantageScore(getCellValueAsString(row.getCell(142)));
                     // 81) Сумма баллов за индивидуальные достижения, учитываемые как преимущество
                     statement.setIndividualAchievementAdvantageTotal(getCellValueAsString(row.getCell(143)));
                     

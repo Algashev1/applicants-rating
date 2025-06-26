@@ -20,6 +20,7 @@ export interface Statement {
   individualAchievementAdvantageTotal: string;
   importDate: string;
   submissionDate: string;
+  spCode: string;
   // ... другие поля ...
   [key: string]: string | number | undefined;
 }
@@ -32,7 +33,7 @@ export interface Statement {
   styleUrls: ['./statement-list.component.css']
 })
 export class StatementListComponent implements OnInit {
-  fullName: string = "";
+  spCode: string = "";
   personalNumber: string = "";
   statements: Statement[] = [];
   filteredStatements: Statement[] = [];
@@ -46,7 +47,7 @@ export class StatementListComponent implements OnInit {
 
   ngOnInit(): void {
     this.personalNumber = this.route.snapshot.paramMap.get('personalNumber') || "";
-    this.fullName = this.route.snapshot.paramMap.get('fullName') || "";
+
     this.http.get<Statement[]>(`${this.apiUrl}/api/statements/by-personalNumber/${this.personalNumber}`)
       .subscribe(data => {
         this.statements = data || [];
@@ -57,6 +58,9 @@ export class StatementListComponent implements OnInit {
         // По умолчанию выбрать самую новую дату
         this.selectedDate = this.availableDates[0] || '';
         this.filterByDate();
+        this.statements.forEach(statement => {
+          this.spCode = statement.spCode;
+        });
       });
   }
 

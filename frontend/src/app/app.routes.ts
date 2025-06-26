@@ -11,7 +11,7 @@ export const routes: Routes = [
     { path: '', component: InstituteListComponent },
     { path: 'upload', component: FileUploadComponent },
     { path: 'abiturients', component: AbiturientsComponent },
-    { path: 'statements/:personalNumber/:fullName', component: StatementListComponent },
+    { path: 'statements/:personalNumber', component: StatementListComponent },
     { path: 'institutes/:id', component: InstituteDirectionsComponent },
     { path: 'directions/:directionName', component: DirectionStatementsComponent }
 ];

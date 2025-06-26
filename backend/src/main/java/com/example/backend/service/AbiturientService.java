@@ -60,6 +60,7 @@ public class AbiturientService {
                 // }
 
                 abiturient.setPersonalNumber(getCellString(row.getCell(31)));
+                abiturient.setSpCode(getCellString(row.getCell(32)));
                 abiturient.setBenefits(getCellString(row.getCell(13)));
                 abiturient.setContactPhone(getCellString(row.getCell(22)));
                 abiturient.setHomePhone(getCellString(row.getCell(23)));

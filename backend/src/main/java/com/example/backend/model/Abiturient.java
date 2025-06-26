@@ -23,6 +23,8 @@ public class Abiturient {
     // личный номер – уникальное поле
     @Column(name = "personal_number", nullable = false)
     private String personalNumber;
+
+    private String spCode;
     
     // Льготы
     private String benefits;
@@ -74,6 +76,13 @@ public class Abiturient {
     }
     public void setPersonalNumber(String personalNumber) {
         this.personalNumber = personalNumber;
+    }
+
+    public String getSpCode() {
+        return spCode;
+    }
+    public void setSpCode(String spCode) {
+        this.spCode = spCode;
     }
     
     public String getBenefits() {

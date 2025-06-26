@@ -72,10 +72,12 @@ tr:hover {
   outline: none;
   transition: background 0.2s, color 0.2s;
   position: relative;
+   font-size: 0.85em;
 }
 .tabs button.active {
   background: #1976d2;
   color: #fff;
+   font-size: 0.85em;
 }
 .tabs .badge {
   background: #43a047;

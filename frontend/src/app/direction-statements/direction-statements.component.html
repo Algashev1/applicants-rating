@@ -55,18 +55,7 @@
               <tr *ngFor="let s of getDisappearedStatements(type.key)">
                 <td>
                   <a
-                    href="/statements/{{ s.personalNumber }}/{{ s.fullName }}"
-                    target="_blank"
-                    rel="noopener"
-                    style="color: #1976d2; text-decoration: underline; cursor: pointer"
-                    (click)="$event.stopPropagation()"
-                  >
-                    {{ s.fullName }}
-                  </a>
-                </td>
-                <td>
-                  <a
-                    href="/statements/{{ s.personalNumber }}/{{ s.fullName }}"
+                    href="/statements/{{ s.personalNumber }}"
                     target="_blank"
                     rel="noopener"
                     style="color: #1976d2; text-decoration: underline; cursor: pointer"
@@ -87,7 +76,7 @@
             <tr>
               <th>№</th>
               <th>Вид приёма</th>
-              <th>ФИО</th>
+              <th>Код абитуриента</th>
               <th>Личный номер</th>
               <th>Сумма баллов ЕГЭ</th>
               <th>Сумма баллов за инд. достижения</th>
@@ -103,18 +92,18 @@
               <td>{{ s['admissionType'] }}</td>
               <td>
                 <a
-                  href="/statements/{{ s['personalNumber'] }}/{{ s['fullName'] }}"
+                  href="/statements/{{ s['personalNumber'] }}"
                   target="_blank"
                   rel="noopener"
                   style="color: #1976d2; text-decoration: underline; cursor: pointer"
                   (click)="$event.stopPropagation()"
                 >
-                  {{ s['fullName'] }}
+                  {{ s['spCode'] }}
                 </a>
               </td>
               <td>
                 <a
-                  href="/statements/{{ s['personalNumber'] }}/{{ s['fullName'] }}"
+                  href="/statements/{{ s['personalNumber'] }}"
                   target="_blank"
                   rel="noopener"
                   style="color: #1976d2; text-decoration: underline; cursor: pointer"

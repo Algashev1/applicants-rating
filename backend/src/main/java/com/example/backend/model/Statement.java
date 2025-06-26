@@ -15,6 +15,8 @@ public class Statement {
     // 1) личный номер
     @Column(nullable = false)
     private String personalNumber;
+
+    private String spCode;
     // 2) дата подачи заявления
     private String submissionDate;
     // 3) преимущественное право
@@ -196,6 +198,14 @@ public class Statement {
     }
     public void setPersonalNumber(String personalNumber) {
         this.personalNumber = personalNumber;
+    }
+
+    public void setSpCode(String spCode) {
+        this.spCode = spCode;
+    }
+
+    public String getSpCode() {
+        return spCode;
     }
 
     public String getSubmissionDate() {
