@@ -45,4 +45,14 @@ public class StatementController {
     public List<String> getAvailableDates() {
         return statementService.getAvailableDates();
     }
+
+    @GetMapping("/direction/{instituteName}/{directionName}/stats")
+    public DirectionStatementsResponse getDirectionStats(
+            @PathVariable String instituteName,
+            @PathVariable String directionName,
+            @RequestParam(required = false) boolean onlyPriorityOne,
+            @RequestParam(required = false) String date
+    ) {
+        return statementService.getDirectionStatementsResponse(instituteName, directionName, onlyPriorityOne, date);
+    }
 }

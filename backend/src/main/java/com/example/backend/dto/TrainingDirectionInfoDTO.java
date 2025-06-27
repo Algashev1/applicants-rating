@@ -5,14 +5,18 @@ public class TrainingDirectionInfoDTO {
     private String name;
     private long totalStatements;
     private long priorityOneStatements;
+    private long newStatements;
+    private long disappearedStatements;
 
     public TrainingDirectionInfoDTO() {}
 
-    public TrainingDirectionInfoDTO(Long id, String name, long totalStatements, long priorityOneStatements) {
+    public TrainingDirectionInfoDTO(Long id, String name, long totalStatements, long priorityOneStatements, long newStatements, long disappearedStatements) {
         this.id = id;
         this.name = name;
         this.totalStatements = totalStatements;
         this.priorityOneStatements = priorityOneStatements;
+        this.newStatements = newStatements;
+        this.disappearedStatements = disappearedStatements;
     }
 
     public Long getId() {
@@ -45,5 +49,21 @@ public class TrainingDirectionInfoDTO {
 
     public void setPriorityOneStatements(long priorityOneStatements) {
         this.priorityOneStatements = priorityOneStatements;
+    }
+
+    public long getNewStatements() {
+        return newStatements;
+    }
+
+    public void setNewStatements(long newStatements) {
+        this.newStatements = newStatements;
+    }
+
+    public long getDisappearedStatements() {
+        return disappearedStatements;
+    }
+
+    public void setDisappearedStatements(long disappearedStatements) {
+        this.disappearedStatements = disappearedStatements;
     }
 }

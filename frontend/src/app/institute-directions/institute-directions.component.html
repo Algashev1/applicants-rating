@@ -6,6 +6,8 @@
         <th>Название направления</th>
         <th>Всего заявлений</th>
         <th>1-ый приоритет</th>
+        <th>Новых заявлений</th>
+        <th>Пропало заявлений</th>
       </tr>
     </thead>
     <tbody>
@@ -13,6 +15,8 @@
         <td>{{ dir.name }}</td>
         <td>{{ dir.totalStatements }}</td>
         <td>{{ dir.priorityOneStatements }}</td>
+        <td>{{ dir.newStatements }}</td>
+        <td>{{ dir.disappearedStatements }}</td>
       </tr>
     </tbody>
   </table>
