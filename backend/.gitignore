@@ -31,3 +31,18 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Исключить все Excel-файлы
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+
+# Исключить временные файлы Excel 
+~$*.xlsx
+~$*.xls
+*.tmp
+
+# Исключить папку с загруженными файлами 
+/uploads/
+/temp/
