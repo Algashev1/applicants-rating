@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface StatementRepository extends JpaRepository<Statement, Long> {
@@ -44,4 +45,6 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
 
     @Query(value = "SELECT DISTINCT CAST(import_date AS text) FROM statements WHERE CAST(import_date AS text) < :date ORDER BY import_date DESC LIMIT 1", nativeQuery = true)
     String findPreviousDate(@Param("date") String date);
+
+    List<Statement> findByImportDate(String importDate);
 }

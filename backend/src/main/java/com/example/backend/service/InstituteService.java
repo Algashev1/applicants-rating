@@ -33,6 +33,8 @@ public class InstituteService {
 
         // Найти самую свежую дату importDate для этого института
         String latestDate = statementRepository.findMaxImportDateByInstitute(institute.getName());
+        // Найти предыдущую дату
+        String prevDate = statementRepository.findPrevImportDate(latestDate);
 
         List<TrainingDirectionInfoDTO> result = new ArrayList<>();
         for (TrainingDirection dir : directions) {
@@ -42,11 +44,27 @@ public class InstituteService {
             long priorityOne = statementRepository.countByInstituteAndTrainingDirectionAndImportDateAndPriority(
                 institute.getName(), dir.getName(), latestDate, "1"
             );
+
+            // Получаем списки заявлений по направлениям на две даты
+            List<com.example.backend.model.Statement> currentStatements = statementRepository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(dir.getName(), latestDate);
+            List<com.example.backend.model.Statement> prevStatements = prevDate != null ? statementRepository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(dir.getName(), prevDate) : new ArrayList<>();
+
+            // Считаем новые и пропавшие заявления по personalNumber
+            Set<String> currentSet = new HashSet<>();
+            for (var s : currentStatements) currentSet.add(s.getPersonalNumber());
+            Set<String> prevSet = new HashSet<>();
+            for (var s : prevStatements) prevSet.add(s.getPersonalNumber());
+
+            long newStatements = currentSet.stream().filter(pn -> !prevSet.contains(pn)).count();
+            long disappearedStatements = prevSet.stream().filter(pn -> !currentSet.contains(pn)).count();
+
             TrainingDirectionInfoDTO dto = new TrainingDirectionInfoDTO();
             dto.setId(dir.getId());
             dto.setName(dir.getName());
             dto.setTotalStatements(total);
             dto.setPriorityOneStatements(priorityOne);
+            dto.setNewStatements(newStatements);
+            dto.setDisappearedStatements(disappearedStatements);
             result.add(dto);
         }
         return result;

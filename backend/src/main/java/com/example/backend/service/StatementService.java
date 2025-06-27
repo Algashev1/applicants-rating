@@ -19,6 +19,8 @@ import com.example.backend.model.TrainingDirection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import com.example.backend.model.DirectionDailyStats;
+import com.example.backend.repository.DirectionDailyStatsRepository;
 
 @Service
 public class StatementService {
@@ -29,6 +31,9 @@ public class StatementService {
 
     @Autowired
     private StatementRepository statementRepository;
+
+    @Autowired
+    private DirectionDailyStatsRepository directionDailyStatsRepository;
 
     public StatementService(
         StatementRepository repository,
@@ -44,17 +49,16 @@ public class StatementService {
     // Если при обработке строки возникает ошибка, она фиксируется, и после импорта выбрасывается исключение с подробностями.
     public void importStatements(MultipartFile file, LocalDate selectedDate) {
         StringBuilder errorMessages = new StringBuilder();
+        Map<String, Integer> currentCounts = new HashMap<>(); // <-- перемещено сюда
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
-             
             Sheet sheet = workbook.getSheetAt(1);
             Iterator<Row> rowIterator = sheet.iterator();
-
             // Пропускаем первые 9 строк (заголовки)
             for (int i = 0; i < 9 && rowIterator.hasNext(); i++) {
                 rowIterator.next();
             }
-            
+            List<Statement> existingStatements = statementRepository.findByImportDate(selectedDate.toString());
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 int rowNum = row.getRowNum();
@@ -266,6 +270,11 @@ public class StatementService {
                     
                     // Сохраняем (создаем или обновляем) запись
                     repository.saveAndFlush(statement);
+
+                    if (!instituteName.isEmpty() && !trainingDirectionName.isEmpty()) {
+                        String key = instituteName + "|" + trainingDirectionName;
+                        currentCounts.put(key, currentCounts.getOrDefault(key, 0) + 1);
+                    }
                 } catch (Exception ex) {
                     errorMessages.append("Ошибка обработки строки ")
                         .append(rowNum)
@@ -286,6 +295,33 @@ public class StatementService {
         if (errorMessages.length() > 0) {
             // Если были ошибки при обработке отдельных строк - выбрасываем исключение с подробностями
             throw new RuntimeException("Ошибки при импорте заявлений:\n" + errorMessages.toString());
+        }
+        // После импорта всех заявлений считаем новые и забранные
+        String previousDate = statementRepository.findPreviousDate(selectedDate.toString());
+        Map<String, Integer> previousCounts = new HashMap<>();
+        if (previousDate != null) {
+            List<Statement> prevStatements = statementRepository.findByImportDate(previousDate);
+            for (Statement s : prevStatements) {
+                String key = s.getInstitute() + "|" + s.getTrainingDirection();
+                previousCounts.put(key, previousCounts.getOrDefault(key, 0) + 1);
+            }
+        }
+        for (String key : currentCounts.keySet()) {
+            int current = currentCounts.getOrDefault(key, 0);
+            int prev = previousCounts.getOrDefault(key, 0);
+            int newStatements = Math.max(current - prev, 0);
+            int withdrawnStatements = Math.max(prev - current, 0);
+            String[] parts = key.split("\\|");
+            String instituteName = parts[0];
+            String directionName = parts[1];
+            DirectionDailyStats stats = directionDailyStatsRepository.findByInstituteNameAndDirectionNameAndImportDate(instituteName, directionName, selectedDate);
+            if (stats == null) stats = new DirectionDailyStats();
+            stats.setInstituteName(instituteName);
+            stats.setDirectionName(directionName);
+            stats.setImportDate(selectedDate.toString());
+            stats.setNewStatements(newStatements);
+            stats.setWithdrawnStatements(withdrawnStatements);
+            directionDailyStatsRepository.save(stats);
         }
     }
 
@@ -322,6 +358,27 @@ public class StatementService {
         result.put("current", current);
         result.put("previous", previous);
         return result;
+    }
+
+    public DirectionStatementsResponse getDirectionStatementsResponse(String instituteName, String directionName, boolean onlyPriorityOne, String date) {
+        // Получаем текущие заявления за выбранную дату
+        List<Statement> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne);
+        // Получаем предыдущие заявления (например, за предыдущую дату)
+        String previousDate = statementRepository.findPreviousDate(date);
+        List<Statement> previous = previousDate != null
+            ? statementRepository.findByDirectionAndDate(directionName, previousDate, onlyPriorityOne)
+            : Collections.emptyList();
+        // Получаем статистику
+        int newStatements = 0;
+        int withdrawnStatements = 0;
+        if (date != null) {
+            DirectionDailyStats stats = directionDailyStatsRepository.findByInstituteNameAndDirectionNameAndImportDate(instituteName, directionName, LocalDate.parse(date));
+            if (stats != null) {
+                newStatements = stats.getNewStatements();
+                withdrawnStatements = stats.getWithdrawnStatements();
+            }
+        }
+        return new DirectionStatementsResponse(current, previous, newStatements, withdrawnStatements);
     }
 
     public List<String> getAvailableDates() {
