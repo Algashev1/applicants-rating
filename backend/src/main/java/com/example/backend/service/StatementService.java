@@ -5,9 +5,6 @@ import com.example.backend.repository.StatementRepository;
 import com.example.backend.repository.InstituteRepository;
 import com.example.backend.repository.TrainingDirectionRepository;
 import com.example.backend.dto.DirectionStatementsResponse;
-import com.example.backend.dto.StatementPublicDto;
-import com.example.backend.mapper.StatementMapper;
-
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -39,9 +36,6 @@ public class StatementService {
 
     @Autowired
     private DirectionDailyStatsRepository directionDailyStatsRepository;
-
-    @Autowired
-    private StatementMapper statementMapper;
 
     public StatementService(
         StatementRepository repository,
@@ -385,9 +379,7 @@ public class StatementService {
 
     public Map<String, Object> getStatementsWithPrevious(String directionName, boolean onlyPriorityOne, String date) {
         // Получаем текущие заявления за выбранную дату
-        List<StatementPublicDto> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne).stream()
-                                                                                                                .map(statementMapper::toPublicDto)
-                                                                                                                .collect(Collectors.toList());
+        List<Statement> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne);
 
         // Получаем предыдущие заявления (например, за предыдущую дату)
         String previousDate = statementRepository.findPreviousDate(date);
@@ -395,12 +387,9 @@ public class StatementService {
             ? statementRepository.findByDirectionAndDate(directionName, previousDate, onlyPriorityOne)
             : Collections.emptyList();
 
-        List<StatementPublicDto> previousPublic = previous.stream()
-                                                    .map(statementMapper::toPublicDto)
-                                                    .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
         result.put("current", current);
-        result.put("previous", previousPublic);
+        result.put("previous", previous);
         return result;
     }
 
