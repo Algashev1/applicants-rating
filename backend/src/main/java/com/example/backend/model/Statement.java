@@ -177,6 +177,13 @@ public class Statement {
     @Column
     private String fullName;
 
+    // Новые поля для направлений с приоритетом
+    private String priority1Direction;
+    private String priority2Direction;
+    private String priority3Direction;
+    private String priority4Direction;
+    private String priority5Direction;
+
     // Getters and Setters
 
     public Long getId() {
@@ -760,5 +767,45 @@ public class Statement {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public void setPriority1Direction(String priority1Direction) {
+        this.priority1Direction = priority1Direction;
+    }
+
+    public String getPriority1Direction() {
+        return priority1Direction;
+    }
+
+    public void setPriority2Direction(String priority2Direction) {
+        this.priority2Direction = priority2Direction;
+    }
+
+    public String getPriority2Direction() {
+        return priority2Direction;
+    }
+
+    public void setPriority3Direction(String priority3Direction) {
+        this.priority3Direction = priority3Direction;
+    }
+
+    public String getPriority3Direction() {
+        return priority3Direction;
+    }
+    
+    public void setPriority4Direction(String priority4Direction) {
+        this.priority4Direction = priority4Direction;
+    }
+
+    public String getPriority4Direction() {
+        return priority4Direction;
+    }
+
+    public void setPriority5Direction(String priority5Direction) {
+        this.priority5Direction = priority5Direction;
+    }
+
+    public String getPriority5Direction() {
+        return priority5Direction;
     }
 }

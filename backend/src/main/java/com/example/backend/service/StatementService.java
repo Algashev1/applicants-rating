@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Collections;
 import com.example.backend.model.DirectionDailyStats;
 import com.example.backend.repository.DirectionDailyStatsRepository;
+import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class StatementService {
@@ -49,6 +51,7 @@ public class StatementService {
     // Если при обработке строки возникает ошибка, она фиксируется, и после импорта выбрасывается исключение с подробностями.
     public void importStatements(MultipartFile file, LocalDate selectedDate) {
         StringBuilder errorMessages = new StringBuilder();
+        List<Statement> allStatements = new ArrayList<>();
         Map<String, Integer> currentCounts = new HashMap<>(); // <-- перемещено сюда
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -270,6 +273,7 @@ public class StatementService {
                     
                     // Сохраняем (создаем или обновляем) запись
                     repository.saveAndFlush(statement);
+                    allStatements.add(statement);
 
                     if (!instituteName.isEmpty() && !trainingDirectionName.isEmpty()) {
                         String key = instituteName + "|" + trainingDirectionName;
@@ -322,6 +326,30 @@ public class StatementService {
             stats.setNewStatements(newStatements);
             stats.setWithdrawnStatements(withdrawnStatements);
             directionDailyStatsRepository.save(stats);
+        }
+        // После чтения всех заявлений в List<Statement> statements
+        Map<String, List<Statement>> byApplicant = allStatements.stream()
+            .collect(Collectors.groupingBy(s -> s.getPersonalNumber())); // или getFio(), если нет id
+
+        for (List<Statement> applicantStatements : byApplicant.values()) {
+            Map<Integer, String> priorityToDirection = applicantStatements.stream()
+                .filter(s -> s.getPriority() != null && !s.getPriority().isEmpty())
+                .collect(Collectors.groupingBy(
+                    s -> Integer.parseInt(s.getPriority()),
+                    Collectors.mapping(Statement::getTrainingDirection, Collectors.toList())
+                ))
+                .entrySet().stream()
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> e.getValue().get(0) // берем первое направление с этим приоритетом
+                ));
+            for (Statement s : applicantStatements) {
+                s.setPriority1Direction(priorityToDirection.get(1));
+                s.setPriority2Direction(priorityToDirection.get(2));
+                s.setPriority3Direction(priorityToDirection.get(3));
+                s.setPriority4Direction(priorityToDirection.get(4));
+                s.setPriority5Direction(priorityToDirection.get(5));
+            }
         }
     }
 

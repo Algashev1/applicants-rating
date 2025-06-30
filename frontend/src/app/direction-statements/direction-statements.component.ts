@@ -117,4 +117,26 @@ export class DirectionStatementsComponent implements OnInit {
     const currentSet = new Set((this.groupedCurrent[typeKey] || []).map(s => s.personalNumber));
     return previous.filter(prev => !currentSet.has(prev.personalNumber));
   }
+
+  highlightDirection(direction: string): any {
+    if (!direction) return {};
+    const prefixes = [
+      '01.03.02',
+      '02.03.02',
+      '03.03.01',
+      '09.03.01',
+      '10.05.03',
+      '11.03.03',
+      '11.05.01',
+      '12.03.03',
+      '12.03.04',
+      '12.03.05'
+    ];
+    const isGreen = prefixes.some(prefix => direction.startsWith(prefix));
+    return {
+      'background-color': isGreen ? '#00FF00' : '#FF4C4C', // ярко-зелёный или красный
+      'color': '#000',
+      'font-size': '12px'
+    };
+  }
 }
