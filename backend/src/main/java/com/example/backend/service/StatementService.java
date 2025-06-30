@@ -341,7 +341,12 @@ public class StatementService {
                 .entrySet().stream()
                 .collect(Collectors.toMap(
                     Map.Entry::getKey,
-                    e -> e.getValue().get(0) // берем первое направление с этим приоритетом
+                    e -> e.getValue().stream()
+                        .filter(dir -> applicantStatements.stream()
+                            .anyMatch(s -> s.getTrainingDirection().equals(dir) && "Общий конкурс".equals(s.getAdmissionType()))
+                        )
+                        .findFirst()
+                        .orElse(e.getValue().get(0)) // если нет с "Общий конкурс", берём первое
                 ));
             for (Statement s : applicantStatements) {
                 s.setPriority1Direction(priorityToDirection.get(1));
