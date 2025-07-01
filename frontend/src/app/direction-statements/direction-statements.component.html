@@ -7,11 +7,11 @@
       <option *ngFor="let d of availableDates" [value]="d">{{ d }}</option>
     </select>
   </div>
-
+  <!-- 
   <label>
     <input type="checkbox" [(ngModel)]="onlyPriorityOne" (change)="loadStatements()" />
     Только приоритет 1
-  </label>
+  </label> -->
 
   <div *ngIf="totalNewStatements > 0" class="new-statements-info" style="font-size: 1.1em">Всего новых заявлений: {{ totalNewStatements }}</div>
   <div *ngIf="totalDisappearedStatements > 0" class="new-statements-info" style="color: #d32f2f">Всего пропавших заявлений: {{ totalDisappearedStatements }}</div>
@@ -28,6 +28,12 @@
   </div>
 
   <ng-container *ngFor="let type of competitionTypes; let i = index">
+    <div class="found-count" style="margin-bottom: 8px; font-size: 1em">
+      Найдено записей: {{ groupedCurrent[type.key].filter(filterRow).length || 0 }}
+      <span *ngIf="groupedCurrent[type.key] && groupedCurrent[type.key].length !== groupedCurrent[type.key].filter(filterRow).length">
+        из {{ groupedCurrent[type.key].length }}
+      </span>
+    </div>
     <div class="table-block" *ngIf="selectedTab === i && groupedCurrent[type.key] && groupedCurrent[type.key].length > 0">
       <div class="new-statements-info" *ngIf="newPersonalNumbers[type.key] && newPersonalNumbers[type.key].size > 0">Новых заявлений: {{ newPersonalNumbers[type.key].size }}</div>
       <div
@@ -75,7 +81,7 @@
           <thead>
             <tr>
               <th>№</th>
-              <th>Вид приёма</th>
+              <!-- <th>Вид приёма</th> -->
               <th>Код абитуриента</th>
               <th>Личный номер</th>
               <th>Сумма баллов ЕГЭ</th>
@@ -89,7 +95,7 @@
               <th>5 (по общему конкурсу)</th>
             </tr>
             <tr>
-              <td></td>
+              <!-- <td></td> -->
               <td>
                 <!-- <select [(ngModel)]="filters.admissionType">
                   <option value="">Все</option>
@@ -127,9 +133,9 @@
                 </select>
               </td>
               <td>
-                <select [(ngModel)]="filters.enrollmentConsent">
+                <select [(ngModel)]="filters.finalConsent">
                   <option value="">Все</option>
-                  <option *ngFor="let v of getUniqueValues('enrollmentConsent', type.key)" [value]="v">{{ v }}</option>
+                  <option *ngFor="let v of getUniqueValues('finalConsent', type.key)" [value]="v">{{ v }}</option>
                 </select>
               </td>
               <td>
@@ -170,7 +176,7 @@
               [ngClass]="{ 'new-statement': newPersonalNumbers[type.key] && newPersonalNumbers[type.key].has(s.personalNumber) }"
             >
               <td>{{ idx + 1 }}</td>
-              <td>{{ s['admissionType'] }}</td>
+              <!-- <td>{{ s['admissionType'] }}</td> -->
               <td>
                 <a
                   href="/statements/{{ s['personalNumber'] }}"
@@ -198,11 +204,11 @@
               <td>{{ s['priority'] }}</td>
               <td
                 [ngStyle]="{
-                  'background-color': s['enrollmentConsent'] === 'да' ? '#00e5e5' : '',
-                  color: s['enrollmentConsent'] === 'да' ? '#000' : ''
+                  'background-color': s['finalConsent'] === 'да' ? '#00e5e5' : '',
+                  color: s['finalConsent'] === 'да' ? '#000' : ''
                 }"
               >
-                {{ s['enrollmentConsent'] }}
+                {{ s['finalConsent'] }}
               </td>
               <td [ngStyle]="priorityCellStyle(s['priority1Direction'])" [title]="s['priority1Direction']">{{ s['priority1Direction'] }}</td>
               <td [ngStyle]="priorityCellStyle(s['priority2Direction'])" [title]="s['priority2Direction']">{{ s['priority2Direction'] }}</td>

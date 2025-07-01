@@ -45,7 +45,7 @@ export class DirectionStatementsComponent implements OnInit {
     totalScore: '',
     individualAchievementTotal: '',
     priority: '',
-    enrollmentConsent: '',
+    finalConsent: '',
     priority1Direction: '',
     priority2Direction: '',
     priority3Direction: '',
@@ -108,7 +108,6 @@ export class DirectionStatementsComponent implements OnInit {
             .map(s => s.personalNumber)
         );
       }
-      console.log(this.disappearedPersonalNumbers);
     });
   }
 
