@@ -177,4 +177,8 @@ export class DirectionStatementsComponent implements OnInit {
     const values = arr.map(s => s[field]).filter(v => v !== undefined && v !== null && v !== '');
     return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ru'));
   }
+
+  resetFilters() {
+    Object.keys(this.filters).forEach(key => this.filters[key] = '');
+  }
 }

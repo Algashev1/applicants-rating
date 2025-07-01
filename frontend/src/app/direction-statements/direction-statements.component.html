@@ -28,12 +28,6 @@
   </div>
 
   <ng-container *ngFor="let type of competitionTypes; let i = index">
-    <div class="found-count" style="margin-bottom: 8px; font-size: 1em">
-      Найдено записей: {{ groupedCurrent[type.key].filter(filterRow).length || 0 }}
-      <span *ngIf="groupedCurrent[type.key] && groupedCurrent[type.key].length !== groupedCurrent[type.key].filter(filterRow).length">
-        из {{ groupedCurrent[type.key].length }}
-      </span>
-    </div>
     <div class="table-block" *ngIf="selectedTab === i && groupedCurrent[type.key] && groupedCurrent[type.key].length > 0">
       <div class="new-statements-info" *ngIf="newPersonalNumbers[type.key] && newPersonalNumbers[type.key].size > 0">Новых заявлений: {{ newPersonalNumbers[type.key].size }}</div>
       <div
@@ -74,6 +68,17 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div *ngIf="groupedCurrent[type.key]" class="found-count" style="margin-bottom: 8px; font-size: 1em">
+        Найдено записей: {{ groupedCurrent[type.key].filter(filterRow).length || 0 }}
+        <span *ngIf="groupedCurrent[type.key] && groupedCurrent[type.key].length !== groupedCurrent[type.key].filter(filterRow).length">
+          из {{ groupedCurrent[type.key].length }}
+        </span>
+      </div>
+
+      <div *ngIf="groupedCurrent[type.key]" style="margin-bottom: 12px">
+        <button (click)="resetFilters()" style="padding: 4px 14px; margin-bottom: 6px">Сбросить все фильтры</button>
       </div>
 
       <div class="table-wrapper">
