@@ -139,4 +139,13 @@ export class DirectionStatementsComponent implements OnInit {
       'font-size': '12px'
     };
   }
+
+  priorityCellStyle(direction: string): any {
+    const base = this.highlightDirection(direction) || {};
+    if (direction === this.directionName) {
+      base['font-weight'] = 'bold';
+      base['color'] = 'rgb(0, 0, 255)';
+    }
+    return base;
+  }
 }

@@ -130,11 +130,11 @@
               >
                 {{ s['enrollmentConsent'] }}
               </td>
-              <td [ngStyle]="highlightDirection(s['priority1Direction'])">{{ s['priority1Direction'] }}</td>
-              <td [ngStyle]="highlightDirection(s['priority2Direction'])">{{ s['priority2Direction'] }}</td>
-              <td [ngStyle]="highlightDirection(s['priority3Direction'])">{{ s['priority3Direction'] }}</td>
-              <td [ngStyle]="highlightDirection(s['priority4Direction'])">{{ s['priority4Direction'] }}</td>
-              <td [ngStyle]="highlightDirection(s['priority5Direction'])">{{ s['priority5Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority1Direction'])">{{ s['priority1Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority2Direction'])">{{ s['priority2Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority3Direction'])">{{ s['priority3Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority4Direction'])">{{ s['priority4Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority5Direction'])">{{ s['priority5Direction'] }}</td>
             </tr>
           </tbody>
         </table>
