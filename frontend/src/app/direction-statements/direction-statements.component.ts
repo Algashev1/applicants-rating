@@ -38,6 +38,21 @@ export class DirectionStatementsComponent implements OnInit {
   availableDates: string[] = [];
   selectedDate: string = '';
 
+  filters: any = {
+    admissionType: '',
+    spCode: '',
+    personalNumber: '',
+    totalScore: '',
+    individualAchievementTotal: '',
+    priority: '',
+    enrollmentConsent: '',
+    priority1Direction: '',
+    priority2Direction: '',
+    priority3Direction: '',
+    priority4Direction: '',
+    priority5Direction: ''
+  };
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -147,5 +162,20 @@ export class DirectionStatementsComponent implements OnInit {
       base['color'] = 'rgb(0, 0, 255)';
     }
     return base;
+  }
+
+  filterRow = (row: any): boolean => {
+    return Object.keys(this.filters).every(key => {
+      if (!this.filters[key]) return true;
+      // Проверяем, есть ли поле в строке
+      if (!(key in row)) return true;
+      return (row[key] || '').toString().toLowerCase().includes(this.filters[key].toLowerCase());
+    });
+  };
+
+  getUniqueValues(field: string, typeKey: string): string[] {
+    const arr = this.groupedCurrent[typeKey] || [];
+    const values = arr.map(s => s[field]).filter(v => v !== undefined && v !== null && v !== '');
+    return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ru'));
   }
 }

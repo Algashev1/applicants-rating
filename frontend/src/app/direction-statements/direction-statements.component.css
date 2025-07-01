@@ -15,9 +15,12 @@ h2 {
   justify-content: center;
   align-items: flex-start;
   margin-top: 20px;
+  /* overflow-x: auto; */
+  max-width: 100vw;
 }
 table {
-  width: 100%;
+  min-width: 1200px;
+  width: max-content;
   border-collapse: collapse;
   background: #fff;
   border-radius: 8px;
@@ -27,6 +30,12 @@ table {
 th, td {
   padding: 14px 12px;
   text-align: center;
+}
+td {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 th {
   background: #1976d2;
@@ -124,4 +133,20 @@ tr:hover {
 #date-select {
   padding: 4px 10px;
   font-size: 1em;
+}
+/* Ограничение ширины и обрезка текста в выпадающих списках */
+th select, td select {
+  max-width: 160px;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+}
+th option, td option {
+  max-width: 160px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
 }

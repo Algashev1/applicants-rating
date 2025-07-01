@@ -79,20 +79,94 @@
               <th>Код абитуриента</th>
               <th>Личный номер</th>
               <th>Сумма баллов ЕГЭ</th>
-              <th>Сумма баллов за инд. достижения</th>
+              <!-- <th>Сумма баллов за инд. достижения</th> -->
               <th>Приоритет</th>
               <th>Итоговое согласие</th>
-              <!-- добавлено -->
               <th>1 (по общему конкурсу)</th>
               <th>2 (по общему конкурсу)</th>
               <th>3 (по общему конкурсу)</th>
               <th>4 (по общему конкурсу)</th>
               <th>5 (по общему конкурсу)</th>
             </tr>
+            <tr>
+              <td></td>
+              <td>
+                <!-- <select [(ngModel)]="filters.admissionType">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('admissionType', type.key)" [value]="v">{{ v }}</option>
+                </select> -->
+              </td>
+              <td>
+                <!-- <select [(ngModel)]="filters.spCode">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('spCode', type.key)" [value]="v">{{ v }}</option>
+                </select> -->
+              </td>
+              <td>
+                <!-- <select [(ngModel)]="filters.personalNumber">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('personalNumber', type.key)" [value]="v">{{ v }}</option>
+                </select> -->
+              </td>
+              <td>
+                <!-- <select [(ngModel)]="filters.totalScore">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('totalScore', type.key)" [value]="v">{{ v }}</option>
+                </select> -->
+              </td>
+              <!-- <td>
+                 <select [(ngModel)]="filters.individualAchievementTotal">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('individualAchievementTotal', type.key)" [value]="v">{{ v }}</option>
+                </select> 
+              </td> -->
+              <td>
+                <select [(ngModel)]="filters.priority">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.enrollmentConsent">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('enrollmentConsent', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.priority1Direction">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority1Direction', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.priority2Direction">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority2Direction', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.priority3Direction">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority3Direction', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.priority4Direction">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority4Direction', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+              <td>
+                <select [(ngModel)]="filters.priority5Direction">
+                  <option value="">Все</option>
+                  <option *ngFor="let v of getUniqueValues('priority5Direction', type.key)" [value]="v">{{ v }}</option>
+                </select>
+              </td>
+            </tr>
           </thead>
           <tbody>
             <tr
-              *ngFor="let s of groupedCurrent[type.key]; let idx = index"
+              *ngFor="let s of groupedCurrent[type.key]?.filter(filterRow); let idx = index"
               [ngClass]="{ 'new-statement': newPersonalNumbers[type.key] && newPersonalNumbers[type.key].has(s.personalNumber) }"
             >
               <td>{{ idx + 1 }}</td>
@@ -120,7 +194,7 @@
                 </a>
               </td>
               <td>{{ s['totalScore'] }}</td>
-              <td>{{ s['individualAchievementTotal'] }}</td>
+              <!-- <td>{{ s['individualAchievementTotal'] }}</td> -->
               <td>{{ s['priority'] }}</td>
               <td
                 [ngStyle]="{
@@ -130,11 +204,11 @@
               >
                 {{ s['enrollmentConsent'] }}
               </td>
-              <td [ngStyle]="priorityCellStyle(s['priority1Direction'])">{{ s['priority1Direction'] }}</td>
-              <td [ngStyle]="priorityCellStyle(s['priority2Direction'])">{{ s['priority2Direction'] }}</td>
-              <td [ngStyle]="priorityCellStyle(s['priority3Direction'])">{{ s['priority3Direction'] }}</td>
-              <td [ngStyle]="priorityCellStyle(s['priority4Direction'])">{{ s['priority4Direction'] }}</td>
-              <td [ngStyle]="priorityCellStyle(s['priority5Direction'])">{{ s['priority5Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority1Direction'])" [title]="s['priority1Direction']">{{ s['priority1Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority2Direction'])" [title]="s['priority2Direction']">{{ s['priority2Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority3Direction'])" [title]="s['priority3Direction']">{{ s['priority3Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority4Direction'])" [title]="s['priority4Direction']">{{ s['priority4Direction'] }}</td>
+              <td [ngStyle]="priorityCellStyle(s['priority5Direction'])" [title]="s['priority5Direction']">{{ s['priority5Direction'] }}</td>
             </tr>
           </tbody>
         </table>
