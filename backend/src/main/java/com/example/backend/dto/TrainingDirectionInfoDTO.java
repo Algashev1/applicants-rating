@@ -8,6 +8,35 @@ public class TrainingDirectionInfoDTO {
     private long newStatements;
     private long disappearedStatements;
 
+    // Новые поля для расширенной статистики
+    private long totalFinalConsent;
+    private long priorityOneFinalConsent;
+
+    // Общий конкурс
+    private long totalCommon;
+    private long newCommon;
+    private long disappearedCommon;
+
+    // По договору
+    private long totalContract;
+    private long newContract;
+    private long disappearedContract;
+
+    // В рамках квоты лиц, имеющих особые права
+    private long totalQuotaSpecial;
+    private long newQuotaSpecial;
+    private long disappearedQuotaSpecial;
+
+    // Отдельная квота
+    private long totalQuotaSeparate;
+    private long newQuotaSeparate;
+    private long disappearedQuotaSeparate;
+
+    // Целевой прием
+    private long totalTarget;
+    private long newTarget;
+    private long disappearedTarget;
+
     public TrainingDirectionInfoDTO() {}
 
     public TrainingDirectionInfoDTO(Long id, String name, long totalStatements, long priorityOneStatements, long newStatements, long disappearedStatements) {
@@ -66,4 +95,143 @@ public class TrainingDirectionInfoDTO {
     public void setDisappearedStatements(long disappearedStatements) {
         this.disappearedStatements = disappearedStatements;
     }
+
+    // --- Геттеры и сеттеры ---
+
+    public long getTotalFinalConsent() {
+        return totalFinalConsent;
+    }
+
+    public void setTotalFinalConsent(long totalFinalConsent) {
+        this.totalFinalConsent = totalFinalConsent;
+    }
+
+    public long getPriorityOneFinalConsent() {
+        return priorityOneFinalConsent;
+    }
+
+    public void setPriorityOneFinalConsent(long priorityOneFinalConsent) {
+        this.priorityOneFinalConsent = priorityOneFinalConsent;
+    }
+
+    public long getTotalCommon() {
+        return totalCommon;
+    }
+
+    public void setTotalCommon(long totalCommon) {
+        this.totalCommon = totalCommon;
+    }
+
+    public long getNewCommon() {
+        return newCommon;
+    }
+
+    public void setNewCommon(long newCommon) {
+        this.newCommon = newCommon;
+    }
+
+    public long getDisappearedCommon() {
+        return disappearedCommon;
+    }
+
+    public void setDisappearedCommon(long disappearedCommon) {
+        this.disappearedCommon = disappearedCommon;
+    }
+
+    public long getTotalContract() {
+        return totalContract;
+    }
+
+    public void setTotalContract(long totalContract) {
+        this.totalContract = totalContract;
+    }
+
+    public long getNewContract() {
+        return newContract;
+    }
+
+    public void setNewContract(long newContract) {
+        this.newContract = newContract;
+    }
+
+    public long getDisappearedContract() {
+        return disappearedContract;
+    }
+
+    public void setDisappearedContract(long disappearedContract) {
+        this.disappearedContract = disappearedContract;
+    }
+
+    public long getTotalQuotaSpecial() {
+        return totalQuotaSpecial;
+    }
+
+    public void setTotalQuotaSpecial(long totalQuotaSpecial) {
+        this.totalQuotaSpecial = totalQuotaSpecial;
+    }
+
+    public long getNewQuotaSpecial() {
+        return newQuotaSpecial;
+    }
+
+    public void setNewQuotaSpecial(long newQuotaSpecial) {
+        this.newQuotaSpecial = newQuotaSpecial;
+    }
+
+    public long getDisappearedQuotaSpecial() {
+        return disappearedQuotaSpecial;
+    }
+
+    public void setDisappearedQuotaSpecial(long disappearedQuotaSpecial) {
+        this.disappearedQuotaSpecial = disappearedQuotaSpecial;
+    }
+
+    public long getTotalQuotaSeparate() {
+        return totalQuotaSeparate;
+    }
+
+    public void setTotalQuotaSeparate(long totalQuotaSeparate) {
+        this.totalQuotaSeparate = totalQuotaSeparate;
+    }
+
+    public long getNewQuotaSeparate() {
+        return newQuotaSeparate;
+    }
+
+    public void setNewQuotaSeparate(long newQuotaSeparate) {
+        this.newQuotaSeparate = newQuotaSeparate;
+    }
+
+    public long getDisappearedQuotaSeparate() {
+        return disappearedQuotaSeparate;
+    }
+
+    public void setDisappearedQuotaSeparate(long disappearedQuotaSeparate) {
+        this.disappearedQuotaSeparate = disappearedQuotaSeparate;
+    }
+
+    public long getTotalTarget() {
+        return totalTarget;
+    }
+
+    public void setTotalTarget(long totalTarget) {
+        this.totalTarget = totalTarget;
+    }
+
+    public long getNewTarget() {
+        return newTarget;
+    }
+
+    public void setNewTarget(long newTarget) {
+        this.newTarget = newTarget;
+    }
+
+    public long getDisappearedTarget() {
+        return disappearedTarget;
+    }
+
+    public void setDisappearedTarget(long disappearedTarget) {
+        this.disappearedTarget = disappearedTarget;
+    }
+
 }

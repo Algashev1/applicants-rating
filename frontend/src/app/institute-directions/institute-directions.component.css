@@ -74,3 +74,114 @@ tr:hover {
   background: #1976d2;
   color: #fff;
 }
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 900px) {
+  .directions-container {
+    max-width: 100vw;
+    margin: 8px 0;
+    padding: 8px 2px 16px 2px;
+    border-radius: 10px;
+  }
+
+  .directions-list {
+    max-width: 100vw;
+    margin: 16px 0;
+    padding: 8px 2px 16px 2px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+    overflow-x: auto; /* скролл только здесь! */
+  }
+
+  table {
+    min-width: 600px;
+    width: max-content;
+    font-size: 0.95em;
+    border-radius: 8px;
+  }
+
+
+  th, td {
+    padding: 7px 4px;
+    font-size: 0.95em;
+    max-width: 120px;
+    overflow: hidden;
+    /* text-overflow: ellipsis;
+    white-space: nowrap; */
+  }
+
+  th:first-child, td:first-child {
+    max-width: 180px; /* делаем первую колонку уже */
+    min-width: 100px;
+    width: 100px;
+  }
+
+  .back-btn {
+    font-size: 0.95em;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  table {
+    min-width: 350px;
+    font-size: 0.85em;
+  }
+  th, td {
+    font-size: 0.85em;
+    max-width: 70px;
+    padding: 4px 4px;
+  }
+  th:first-child, td:first-child {
+    max-width: 100px;
+    min-width: 70px;
+    width: 70px;
+  }
+}
+
+/* Центрируем все ячейки, кроме первой колонки */
+th, td {
+  text-align: center;
+}
+
+/* Первый столбец — выравнивание влево */
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+.plus {
+  color: #388e3c;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.minus {
+  color: #d32f2f;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.compact-table th,
+.compact-table td {
+  padding: 4px 6px;
+  font-size: 0.97em;
+  min-width: 48px;
+  max-width: 120px;
+  /* white-space: nowrap; */
+}
+
+.compact-table th {
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .compact-table th,
+  .compact-table td {
+    padding: 2px 3px;
+    font-size: 0.92em;
+    min-width: 38px;
+    max-width: 80px;
+  }
+}

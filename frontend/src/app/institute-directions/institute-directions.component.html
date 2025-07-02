@@ -2,23 +2,57 @@
   <button class="back-btn" (click)="goBack()">← Назад к институтам</button>
   <h2>{{ instituteName }}</h2>
   <div class="directions-list">
-    <table>
+    <table class="compact-table">
       <thead>
         <tr>
-          <th>Название направления</th>
-          <th>Всего заявлений</th>
-          <th>1-ый приоритет</th>
-          <th>Новых заявлений</th>
-          <th>Пропало заявлений</th>
+          <th>Направление</th>
+          <th>Всего</th>
+          <th>Согласие</th>
+          <th>1-й приор.</th>
+          <th>1-й приор. + согл.</th>
+          <th>Общий</th>
+          <th>Договор</th>
+          <th>Ос. квота</th>
+          <th>Отд. квота</th>
+          <th>Целевой</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let dir of directions" (click)="openDirection(dir)">
           <td>{{ dir.name }}</td>
-          <td>{{ dir.totalStatements }}</td>
+          <td>
+            {{ dir.totalStatements }}
+            <span *ngIf="dir.newStatements" class="plus">+{{ dir.newStatements }}</span>
+            <span *ngIf="dir.disappearedStatements" class="minus">-{{ dir.disappearedStatements }}</span>
+          </td>
+          <td>{{ dir.totalFinalConsent }}</td>
           <td>{{ dir.priorityOneStatements }}</td>
-          <td>{{ dir.newStatements }}</td>
-          <td>{{ dir.disappearedStatements }}</td>
+          <td>{{ dir.priorityOneFinalConsent }}</td>
+          <td>
+            {{ dir.totalCommon }}
+            <span *ngIf="dir.newCommon" class="plus">+{{ dir.newCommon }}</span>
+            <span *ngIf="dir.disappearedCommon" class="minus">-{{ dir.disappearedCommon }}</span>
+          </td>
+          <td>
+            {{ dir.totalContract }}
+            <span *ngIf="dir.newContract" class="plus">+{{ dir.newContract }}</span>
+            <span *ngIf="dir.disappearedContract" class="minus">-{{ dir.disappearedContract }}</span>
+          </td>
+          <td>
+            {{ dir.totalQuotaSpecial }}
+            <span *ngIf="dir.newQuotaSpecial" class="plus">+{{ dir.newQuotaSpecial }}</span>
+            <span *ngIf="dir.disappearedQuotaSpecial" class="minus">-{{ dir.disappearedQuotaSpecial }}</span>
+          </td>
+          <td>
+            {{ dir.totalQuotaSeparate }}
+            <span *ngIf="dir.newQuotaSeparate" class="plus">+{{ dir.newQuotaSeparate }}</span>
+            <span *ngIf="dir.disappearedQuotaSeparate" class="minus">-{{ dir.disappearedQuotaSeparate }}</span>
+          </td>
+          <td>
+            {{ dir.totalTarget }}
+            <span *ngIf="dir.newTarget" class="plus">+{{ dir.newTarget }}</span>
+            <span *ngIf="dir.disappearedTarget" class="minus">-{{ dir.disappearedTarget }}</span>
+          </td>
         </tr>
       </tbody>
     </table>

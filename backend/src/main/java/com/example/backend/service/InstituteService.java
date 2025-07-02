@@ -8,6 +8,7 @@ import com.example.backend.repository.TrainingDirectionRepository;
 import com.example.backend.repository.StatementRepository;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InstituteService {
@@ -31,40 +32,111 @@ public class InstituteService {
 
         List<TrainingDirection> directions = trainingDirectionRepository.findByInstitute(institute);
 
-        // Найти самую свежую дату importDate для этого института
         String latestDate = statementRepository.findMaxImportDateByInstitute(institute.getName());
-        // Найти предыдущую дату
         String prevDate = statementRepository.findPrevImportDate(latestDate);
 
         List<TrainingDirectionInfoDTO> result = new ArrayList<>();
         for (TrainingDirection dir : directions) {
-            long total = statementRepository.countByInstituteAndTrainingDirectionAndImportDate(
-                institute.getName(), dir.getName(), latestDate
-            );
-            long priorityOne = statementRepository.countByInstituteAndTrainingDirectionAndImportDateAndPriority(
-                institute.getName(), dir.getName(), latestDate, "1"
-            );
-
             // Получаем списки заявлений по направлениям на две даты
             List<com.example.backend.model.Statement> currentStatements = statementRepository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(dir.getName(), latestDate);
             List<com.example.backend.model.Statement> prevStatements = prevDate != null ? statementRepository.findByTrainingDirectionAndImportDateOrderByTotalScoreDesc(dir.getName(), prevDate) : new ArrayList<>();
 
-            // Считаем новые и пропавшие заявления по personalNumber
-            Set<String> currentSet = new HashSet<>();
-            for (var s : currentStatements) currentSet.add(s.getPersonalNumber());
-            Set<String> prevSet = new HashSet<>();
-            for (var s : prevStatements) prevSet.add(s.getPersonalNumber());
+            // Для поиска новых и пропавших заявлений
+            Set<String> currentSet = currentStatements.stream().map(s -> s.getPersonalNumber()).collect(Collectors.toSet());
+            Set<String> prevSet = prevStatements.stream().map(s -> s.getPersonalNumber()).collect(Collectors.toSet());
 
-            long newStatements = currentSet.stream().filter(pn -> !prevSet.contains(pn)).count();
-            long disappearedStatements = prevSet.stream().filter(pn -> !currentSet.contains(pn)).count();
+            // 1) total общее количество заявлений для этого направления
+            long total = currentStatements.size();
 
+            // 2) общее количество заявлений, у которых finalConsent равен "Да"
+            long totalFinalConsent = currentStatements.stream()
+                    .filter(s -> "Да".equalsIgnoreCase(s.getFinalConsent()))
+                    .count();
+
+            // 3) общее количество заявлений, у которых направление указано с приоритетом 1
+            long totalPriorityOne = currentStatements.stream()
+                    .filter(s -> "1".equals(String.valueOf(s.getPriority())))
+                    .count();
+
+            // 4) общее количество заявлений, у которых направление указано с приоритетом 1 и finalConsent == "Да"
+// и admissionType != "По договору"
+            long totalPriorityOneFinalConsent = currentStatements.stream()
+    .filter(s -> "1".equals(String.valueOf(s.getPriority()))
+        && "Да".equalsIgnoreCase(s.getFinalConsent())
+        && !"По договору".equals(s.getAdmissionType()))
+    .count();
+
+            // Универсальный метод для подсчёта total/новых/пропавших по admissionType
+            String[] types = {
+                "Общий конкурс",
+                "По договору",
+                "В рамках квоты лиц, имеющих особые права",
+                "Отдельная квота",
+                "Целевой прием"
+            };
+
+            Map<String, Long> totalByType = new HashMap<>();
+            Map<String, Long> newByType = new HashMap<>();
+            Map<String, Long> disappearedByType = new HashMap<>();
+
+            for (String type : types) {
+                // total только для заявлений с этим admissionType
+                long totalType = currentStatements.stream()
+                        .filter(s -> type.equals(s.getAdmissionType()))
+                        .count();
+                totalByType.put(type, totalType);
+
+                // новые заявления с этим admissionType
+                long newType = currentStatements.stream()
+                        .filter(s -> type.equals(s.getAdmissionType()))
+                        .map(s -> s.getPersonalNumber())
+                        .filter(pn -> !prevSet.contains(pn))
+                        .count();
+                newByType.put(type, newType);
+
+                // пропавшие заявления с этим admissionType
+                long disappearedType = prevStatements.stream()
+                        .filter(s -> type.equals(s.getAdmissionType()))
+                        .map(s -> s.getPersonalNumber())
+                        .filter(pn -> !currentSet.contains(pn))
+                        .count();
+                disappearedByType.put(type, disappearedType);
+            }
+
+            // --- Заполнение DTO ---
             TrainingDirectionInfoDTO dto = new TrainingDirectionInfoDTO();
             dto.setId(dir.getId());
             dto.setName(dir.getName());
             dto.setTotalStatements(total);
-            dto.setPriorityOneStatements(priorityOne);
-            dto.setNewStatements(newStatements);
-            dto.setDisappearedStatements(disappearedStatements);
+            dto.setTotalFinalConsent(totalFinalConsent);
+            dto.setPriorityOneStatements(totalPriorityOne);
+            dto.setPriorityOneFinalConsent(totalPriorityOneFinalConsent);
+
+            // Пример: для "Общий конкурс"
+            dto.setTotalCommon(totalByType.get("Общий конкурс"));
+            dto.setNewCommon(newByType.get("Общий конкурс"));
+            dto.setDisappearedCommon(disappearedByType.get("Общий конкурс"));
+
+            // Для "По договору"
+            dto.setTotalContract(totalByType.get("По договору"));
+            dto.setNewContract(newByType.get("По договору"));
+            dto.setDisappearedContract(disappearedByType.get("По договору"));
+
+            // Для "В рамках квоты лиц, имеющих особые права"
+            dto.setTotalQuotaSpecial(totalByType.get("В рамках квоты лиц, имеющих особые права"));
+            dto.setNewQuotaSpecial(newByType.get("В рамках квоты лиц, имеющих особые права"));
+            dto.setDisappearedQuotaSpecial(disappearedByType.get("В рамках квоты лиц, имеющих особые права"));
+
+            // Для "Отдельная квота"
+            dto.setTotalQuotaSeparate(totalByType.get("Отдельная квота"));
+            dto.setNewQuotaSeparate(newByType.get("Отдельная квота"));
+            dto.setDisappearedQuotaSeparate(disappearedByType.get("Отдельная квота"));
+
+            // Для "Целевой прием"
+            dto.setTotalTarget(totalByType.get("Целевой прием"));
+            dto.setNewTarget(newByType.get("Целевой прием"));
+            dto.setDisappearedTarget(disappearedByType.get("Целевой прием"));
+
             result.add(dto);
         }
         return result;
