@@ -37,6 +37,18 @@ public class TrainingDirectionInfoDTO {
     private long newTarget;
     private long disappearedTarget;
 
+    // Новые поля для новых и пропавших заявлений по totalFinalConsent
+    private long newTotalFinalConsent;
+    private long disappearedTotalFinalConsent;
+
+    // Новые поля для новых и пропавших заявлений по priorityOneStatements
+    private long newPriorityOneStatements;
+    private long disappearedPriorityOneStatements;
+
+    // Новые поля для новых и пропавших заявлений по priorityOneFinalConsent
+    private long newPriorityOneFinalConsent;
+    private long disappearedPriorityOneFinalConsent;
+
     public TrainingDirectionInfoDTO() {}
 
     public TrainingDirectionInfoDTO(Long id, String name, long totalStatements, long priorityOneStatements, long newStatements, long disappearedStatements) {
@@ -232,6 +244,54 @@ public class TrainingDirectionInfoDTO {
 
     public void setDisappearedTarget(long disappearedTarget) {
         this.disappearedTarget = disappearedTarget;
+    }
+
+    public long getNewTotalFinalConsent() {
+        return newTotalFinalConsent;
+    }
+
+    public void setNewTotalFinalConsent(long newTotalFinalConsent) {
+        this.newTotalFinalConsent = newTotalFinalConsent;
+    }
+
+    public long getDisappearedTotalFinalConsent() {
+        return disappearedTotalFinalConsent;
+    }
+
+    public void setDisappearedTotalFinalConsent(long disappearedTotalFinalConsent) {
+        this.disappearedTotalFinalConsent = disappearedTotalFinalConsent;
+    }
+
+    public long getNewPriorityOneStatements() {
+        return newPriorityOneStatements;
+    }
+
+    public void setNewPriorityOneStatements(long newPriorityOneStatements) {
+        this.newPriorityOneStatements = newPriorityOneStatements;
+    }
+
+    public long getDisappearedPriorityOneStatements() {
+        return disappearedPriorityOneStatements;
+    }
+
+    public void setDisappearedPriorityOneStatements(long disappearedPriorityOneStatements) {
+        this.disappearedPriorityOneStatements = disappearedPriorityOneStatements;
+    }
+
+    public long getNewPriorityOneFinalConsent() {
+        return newPriorityOneFinalConsent;
+    }
+
+    public void setNewPriorityOneFinalConsent(long newPriorityOneFinalConsent) {
+        this.newPriorityOneFinalConsent = newPriorityOneFinalConsent;
+    }
+
+    public long getDisappearedPriorityOneFinalConsent() {
+        return disappearedPriorityOneFinalConsent;
+    }
+
+    public void setDisappearedPriorityOneFinalConsent(long disappearedPriorityOneFinalConsent) {
+        this.disappearedPriorityOneFinalConsent = disappearedPriorityOneFinalConsent;
     }
 
 }

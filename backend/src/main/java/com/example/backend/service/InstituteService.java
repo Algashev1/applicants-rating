@@ -50,26 +50,86 @@ public class InstituteService {
             Set<String> currentSet = currentStatements.stream().map(s -> s.getPersonalNumber()).collect(Collectors.toSet());
             Set<String> prevSet = prevStatements.stream().map(s -> s.getPersonalNumber()).collect(Collectors.toSet());
 
-            // 1) total общее количество заявлений для этого направления
+            // 1) total
             long total = currentStatements.size();
+            long newTotal = currentStatements.stream()
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !prevSet.contains(pn))
+                .count();
+            long disappearedTotal = prevStatements.stream()
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !currentSet.contains(pn))
+                .count();
 
-            // 2) общее количество заявлений, у которых finalConsent равен "Да"
-            long totalFinalConsent = currentStatements.stream()
-                    .filter(s -> "Да".equalsIgnoreCase(s.getFinalConsent()))
-                    .count();
+            // 2) totalFinalConsent
+            List<com.example.backend.model.Statement> currentFinalConsent = currentStatements.stream()
+                .filter(s -> "Да".equalsIgnoreCase(s.getFinalConsent()))
+                .collect(Collectors.toList());
+            long totalFinalConsent = currentFinalConsent.size();
+            long newTotalFinalConsent = currentFinalConsent.stream()
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !prevSet.contains(pn))
+                .count();
+            long disappearedTotalFinalConsent = prevStatements.stream()
+                .filter(s -> "Да".equalsIgnoreCase(s.getFinalConsent()))
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !currentSet.contains(pn))
+                .count();
 
-            // 3) общее количество заявлений, у которых направление указано с приоритетом 1
-            long totalPriorityOne = currentStatements.stream()
-                    .filter(s -> "1".equals(String.valueOf(s.getPriority())))
-                    .count();
+            // 3) totalPriorityOne
+            List<com.example.backend.model.Statement> currentPriorityOne = currentStatements.stream()
+                .filter(s -> "1".equals(String.valueOf(s.getPriority())))
+                .collect(Collectors.toList());
+            long totalPriorityOne = currentPriorityOne.size();
+            long newTotalPriorityOne = currentPriorityOne.stream()
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !prevSet.contains(pn))
+                .count();
+            long disappearedTotalPriorityOne = prevStatements.stream()
+                .filter(s -> "1".equals(String.valueOf(s.getPriority())))
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !currentSet.contains(pn))
+                .count();
 
-            // 4) общее количество заявлений, у которых направление указано с приоритетом 1 и finalConsent == "Да"
-// и admissionType != "По договору"
-            long totalPriorityOneFinalConsent = currentStatements.stream()
-    .filter(s -> "1".equals(String.valueOf(s.getPriority()))
-        && "Да".equalsIgnoreCase(s.getFinalConsent())
-        && !"По договору".equals(s.getAdmissionType()))
-    .count();
+            // 4) totalPriorityOneFinalConsent (admissionType != "По договору")
+            List<com.example.backend.model.Statement> currentPriorityOneFinalConsent = currentStatements.stream()
+                .filter(s -> "1".equals(String.valueOf(s.getPriority()))
+                    && "Да".equalsIgnoreCase(s.getFinalConsent())
+                    && !"По договору".equals(s.getAdmissionType()))
+                .collect(Collectors.toList());
+            long totalPriorityOneFinalConsent = currentPriorityOneFinalConsent.size();
+            long newTotalPriorityOneFinalConsent = currentPriorityOneFinalConsent.stream()
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !prevSet.contains(pn))
+                .count();
+            long disappearedTotalPriorityOneFinalConsent = prevStatements.stream()
+                .filter(s -> "1".equals(String.valueOf(s.getPriority()))
+                    && "Да".equalsIgnoreCase(s.getFinalConsent())
+                    && !"По договору".equals(s.getAdmissionType()))
+                .map(s -> s.getPersonalNumber())
+                .filter(pn -> !currentSet.contains(pn))
+                .count();
+
+            // --- Заполнение DTO ---
+            TrainingDirectionInfoDTO dto = new TrainingDirectionInfoDTO();
+            dto.setId(dir.getId());
+            dto.setName(dir.getName());
+
+            dto.setTotalStatements(total);
+            dto.setNewStatements(newTotal);
+            dto.setDisappearedStatements(disappearedTotal);
+
+            dto.setTotalFinalConsent(totalFinalConsent);
+            dto.setNewTotalFinalConsent(newTotalFinalConsent);
+            dto.setDisappearedTotalFinalConsent(disappearedTotalFinalConsent);
+
+            dto.setPriorityOneStatements(totalPriorityOne);
+            dto.setNewPriorityOneStatements(newTotalPriorityOne);
+            dto.setDisappearedPriorityOneStatements(disappearedTotalPriorityOne);
+
+            dto.setPriorityOneFinalConsent(totalPriorityOneFinalConsent);
+            dto.setNewPriorityOneFinalConsent(newTotalPriorityOneFinalConsent);
+            dto.setDisappearedPriorityOneFinalConsent(disappearedTotalPriorityOneFinalConsent);
 
             // Универсальный метод для подсчёта total/новых/пропавших по admissionType
             String[] types = {
@@ -107,15 +167,6 @@ public class InstituteService {
                         .count();
                 disappearedByType.put(type, disappearedType);
             }
-
-            // --- Заполнение DTO ---
-            TrainingDirectionInfoDTO dto = new TrainingDirectionInfoDTO();
-            dto.setId(dir.getId());
-            dto.setName(dir.getName());
-            dto.setTotalStatements(total);
-            dto.setTotalFinalConsent(totalFinalConsent);
-            dto.setPriorityOneStatements(totalPriorityOne);
-            dto.setPriorityOneFinalConsent(totalPriorityOneFinalConsent);
 
             // Пример: для "Общий конкурс"
             dto.setTotalCommon(totalByType.get("Общий конкурс"));

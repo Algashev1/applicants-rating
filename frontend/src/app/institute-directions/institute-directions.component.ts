@@ -15,6 +15,7 @@ export class InstituteDirectionsComponent implements OnInit {
     directions: any[] = [];
     instituteName: string = '';
     private apiUrl = environment.apiUrl;
+    showChanges: boolean = true;
 
     constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
@@ -34,5 +35,9 @@ export class InstituteDirectionsComponent implements OnInit {
 
     goBack() {
         this.router.navigate(['/']);
+    }
+
+    toggleShowChanges(event: Event): void {
+        this.showChanges = (event.target as HTMLInputElement).checked;
     }
 }
