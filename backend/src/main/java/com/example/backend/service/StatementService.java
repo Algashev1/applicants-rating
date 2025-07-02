@@ -62,6 +62,8 @@ public class StatementService {
                 rowIterator.next();
             }
             List<Statement> existingStatements = statementRepository.findByImportDate(selectedDate.toString());
+            List<Statement> batch = new ArrayList<>();
+            int batchSize = 500; // Можно подобрать оптимальный размер
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 int rowNum = row.getRowNum();
@@ -272,8 +274,14 @@ public class StatementService {
                     statement.setIndividualAchievementAdvantageTotal(getCellValueAsString(row.getCell(143)));
                     
                     // Сохраняем (создаем или обновляем) запись
-                    repository.saveAndFlush(statement);
+                    batch.add(statement);
                     allStatements.add(statement);
+
+                    if (batch.size() >= batchSize) {
+                        repository.saveAll(batch);
+                        repository.flush();
+                        batch.clear();
+                    }
 
                     if (!instituteName.isEmpty() && !trainingDirectionName.isEmpty()) {
                         String key = instituteName + "|" + trainingDirectionName;
@@ -292,6 +300,11 @@ public class StatementService {
                         .append(ex.getMessage())
                         .append("\n");
                 }
+            }
+            // Сохраняем оставшиеся
+            if (!batch.isEmpty()) {
+                repository.saveAll(batch);
+                repository.flush();
             }
         } catch (Exception e) {
             throw new RuntimeException("Ошибка чтения файла: " + e.getMessage(), e);
@@ -332,22 +345,25 @@ public class StatementService {
             .collect(Collectors.groupingBy(s -> s.getPersonalNumber())); // или getFio(), если нет id
 
         for (List<Statement> applicantStatements : byApplicant.values()) {
-            Map<Integer, String> priorityToDirection = applicantStatements.stream()
+            // Сгруппируем по приоритету и сразу выберем нужное направление
+            Map<Integer, String> priorityToDirection = new HashMap<>();
+            Map<Integer, List<Statement>> byPriority = applicantStatements.stream()
                 .filter(s -> s.getPriority() != null && !s.getPriority().isEmpty())
-                .collect(Collectors.groupingBy(
-                    s -> Integer.parseInt(s.getPriority()),
-                    Collectors.mapping(Statement::getTrainingDirection, Collectors.toList())
-                ))
-                .entrySet().stream()
-                .collect(Collectors.toMap(
-                    Map.Entry::getKey,
-                    e -> e.getValue().stream()
-                        .filter(dir -> applicantStatements.stream()
-                            .anyMatch(s -> s.getTrainingDirection().equals(dir) && "Общий конкурс".equals(s.getAdmissionType()))
-                        )
-                        .findFirst()
-                        .orElse(e.getValue().get(0)) // если нет с "Общий конкурс", берём первое
-                ));
+                .collect(Collectors.groupingBy(s -> Integer.parseInt(s.getPriority())));
+            for (Map.Entry<Integer, List<Statement>> entry : byPriority.entrySet()) {
+                // Сначала ищем с "Общий конкурс", если нет — берём первое попавшееся
+                String direction = null;
+                for (Statement s : entry.getValue()) {
+                    if ("Общий конкурс".equals(s.getAdmissionType())) {
+                        direction = s.getTrainingDirection();
+                        break;
+                    }
+                }
+                if (direction == null && !entry.getValue().isEmpty()) {
+                    direction = entry.getValue().get(0).getTrainingDirection();
+                }
+                priorityToDirection.put(entry.getKey(), direction);
+            }
             for (Statement s : applicantStatements) {
                 s.setPriority1Direction(priorityToDirection.get(1));
                 s.setPriority2Direction(priorityToDirection.get(2));

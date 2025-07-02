@@ -1,8 +1,10 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.TrainingDirectionInfoDTO;
+import com.example.backend.model.DirectionDailyStats;
 import com.example.backend.model.Institute;
 import com.example.backend.model.TrainingDirection;
+import com.example.backend.repository.DirectionDailyStatsRepository;
 import com.example.backend.repository.InstituteRepository;
 import com.example.backend.repository.TrainingDirectionRepository;
 import com.example.backend.repository.StatementRepository;
@@ -15,15 +17,18 @@ public class InstituteService {
     private final InstituteRepository instituteRepository;
     private final TrainingDirectionRepository trainingDirectionRepository;
     private final StatementRepository statementRepository;
+    private final DirectionDailyStatsRepository directionDailyStatsRepository;
 
     public InstituteService(
         InstituteRepository instituteRepository,
         TrainingDirectionRepository trainingDirectionRepository,
-        StatementRepository statementRepository
+        StatementRepository statementRepository,
+        DirectionDailyStatsRepository directionDailyStatsRepository
     ) {
         this.instituteRepository = instituteRepository;
         this.trainingDirectionRepository = trainingDirectionRepository;
         this.statementRepository = statementRepository;
+        this.directionDailyStatsRepository = directionDailyStatsRepository;
     }
 
     public List<TrainingDirectionInfoDTO> getDirectionsWithStats(Long instituteId) {
@@ -140,5 +145,24 @@ public class InstituteService {
             result.add(dto);
         }
         return result;
+    }
+
+    public void saveDirectionDailyStats(Map<String, Long> currentCounts, int batchSize) {
+        List<DirectionDailyStats> statsBatch = new ArrayList<>();
+        for (String key : currentCounts.keySet()) {
+            DirectionDailyStats stats = new DirectionDailyStats();
+            // ...настройка stats в зависимости от ключа и значений currentCounts...
+
+            statsBatch.add(stats);
+            if (statsBatch.size() >= batchSize) {
+                directionDailyStatsRepository.saveAll(statsBatch);
+                directionDailyStatsRepository.flush();
+                statsBatch.clear();
+            }
+        }
+        if (!statsBatch.isEmpty()) {
+            directionDailyStatsRepository.saveAll(statsBatch);
+            directionDailyStatsRepository.flush();
+        }
     }
 }
