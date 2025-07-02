@@ -13,7 +13,7 @@ import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
     <div class="navbar-links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Институты</a>
       <a routerLink="/abiturients" routerLinkActive="active">Абитуриенты</a>
-      <a routerLink="/upload" routerLinkActive="active">Загрузка файлов</a>
+      <a routerLink="/upload" routerLinkActive="active">Файлы</a>
     </div>
   </div>
 </nav>

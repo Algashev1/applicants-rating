@@ -17,7 +17,9 @@ export class InstituteListComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
-    this.http.get<any[]>(`${this.apiUrl}/api/institutes`).subscribe(data => this.institutes = data);
+    this.http.get<any[]>(`${this.apiUrl}/api/institutes`).subscribe(data => {
+      this.institutes = data.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    });
   }
 
   openInstitute(institute: any) {

@@ -1,23 +1,26 @@
-<div class="directions-list">
-  <h2>Направления {{ instituteName }}</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Название направления</th>
-        <th>Всего заявлений</th>
-        <th>1-ый приоритет</th>
-        <th>Новых заявлений</th>
-        <th>Пропало заявлений</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let dir of directions" (click)="openDirection(dir)">
-        <td>{{ dir.name }}</td>
-        <td>{{ dir.totalStatements }}</td>
-        <td>{{ dir.priorityOneStatements }}</td>
-        <td>{{ dir.newStatements }}</td>
-        <td>{{ dir.disappearedStatements }}</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="directions-container">
+  <button class="back-btn" (click)="goBack()">← Назад к институтам</button>
+  <h2>{{ instituteName }}</h2>
+  <div class="directions-list">
+    <table>
+      <thead>
+        <tr>
+          <th>Название направления</th>
+          <th>Всего заявлений</th>
+          <th>1-ый приоритет</th>
+          <th>Новых заявлений</th>
+          <th>Пропало заявлений</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dir of directions" (click)="openDirection(dir)">
+          <td>{{ dir.name }}</td>
+          <td>{{ dir.totalStatements }}</td>
+          <td>{{ dir.priorityOneStatements }}</td>
+          <td>{{ dir.newStatements }}</td>
+          <td>{{ dir.disappearedStatements }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

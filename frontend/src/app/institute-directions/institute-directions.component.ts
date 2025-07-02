@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +16,7 @@ export class InstituteDirectionsComponent implements OnInit {
     instituteName: string = '';
     private apiUrl = environment.apiUrl;
 
-    constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) { }
+    constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
@@ -30,5 +30,9 @@ export class InstituteDirectionsComponent implements OnInit {
 
     openDirection(dir: any) {
         this.router.navigate(['/directions', dir.name]);
+    }
+
+    goBack() {
+        this.router.navigate(['/']);
     }
 }
