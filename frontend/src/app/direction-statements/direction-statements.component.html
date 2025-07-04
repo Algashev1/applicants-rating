@@ -17,12 +17,12 @@
   <div *ngIf="totalDisappearedStatements > 0" class="new-statements-info" style="color: #d32f2f">Всего пропавших заявлений: {{ totalDisappearedStatements }}</div>
 
   <div class="tabs">
-    <button *ngFor="let type of competitionTypes; let i = index" [class.active]="selectedTab === i" (click)="selectedTab = i">
+    <button *ngFor="let type of competitionTypes; let i = index" [class.active]="selectedTab === i" (click)="selectTab(i)">
       {{ type.label }}
-      <span *ngIf="groupedCurrent[type.key]" class="total-count">({{ groupedCurrent[type.key].length || 0 }})</span>
-      <span *ngIf="newPersonalNumbers[type.key] && newPersonalNumbers[type.key].size > 0" class="badge"> +{{ newPersonalNumbers[type.key].size }} </span>
-      <span *ngIf="disappearedPersonalNumbers[type.key] && disappearedPersonalNumbers[type.key].size > 0" class="badge" style="background: #d32f2f; margin-left: 4px">
-        -{{ disappearedPersonalNumbers[type.key].size }}
+      <span class="tab-counts">
+        <span class="total-count">{{ getTotalCount(type.key) }}</span>
+        <span *ngIf="getNewCount(type.key)" class="badge new">+{{ getNewCount(type.key) }}</span>
+        <span *ngIf="getDisappearedCount(type.key)" class="badge disappeared">-{{ getDisappearedCount(type.key) }}</span>
       </span>
     </button>
   </div>

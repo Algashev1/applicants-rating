@@ -182,4 +182,20 @@ export class DirectionStatementsComponent implements OnInit {
   resetFilters() {
     Object.keys(this.filters).forEach(key => this.filters[key] = '');
   }
+
+  getTotalCount(typeKey: string): number {
+    return this.groupedCurrent[typeKey]?.length || 0;
+  }
+
+  getNewCount(typeKey: string): number {
+    return this.newPersonalNumbers[typeKey]?.size || 0;
+  }
+
+  getDisappearedCount(typeKey: string): number {
+    return this.disappearedPersonalNumbers[typeKey]?.size || 0;
+  }
+
+  selectTab(i: number): void {
+    this.selectedTab = i;
+  }
 }
