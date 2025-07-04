@@ -211,12 +211,13 @@ td:first-child {
   background: #ffffff; /* важно для перекрытия */
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   min-width: 130px;
-  padding: 4px;
+  padding: 4px 8px;
 }
 .compact-table thead th:first-child {
   background: #1976d2;
   color: #fff;
   z-index: 12;
+  padding-left: 8px;
 }
 .compact-table tbody tr:nth-child(even) td:first-child {
   background: #f1f5fa;
