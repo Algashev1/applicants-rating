@@ -26,7 +26,8 @@ export class DirectionStatementsComponent implements OnInit {
     { key: 'Общий конкурс', label: 'Общий конкурс' },
     { key: 'По договору', label: 'По договору' },
     { key: 'В рамках квоты лиц, имеющих особые права', label: 'Квота особые права' },
-    { key: 'Отдельная квота', label: 'Отдельная квота' }
+    { key: 'Отдельная квота', label: 'Отдельная квота' },
+    { key: 'Целевой прием', label: 'Целевой прием' }
   ];
 
   groupedCurrent: { [key: string]: any[] } = {};

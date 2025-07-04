@@ -56,6 +56,10 @@ public class StatementService {
         StringBuilder errorMessages = new StringBuilder();
         List<Statement> allStatements = new ArrayList<>();
         Map<String, Integer> currentCounts = new HashMap<>(); // <-- перемещено сюда
+        // Перед циклом импорта:
+        Map<String, Institute> instituteCache = new HashMap<>();
+        Map<String, TrainingDirection> directionCache = new HashMap<>();
+
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(1);
@@ -69,8 +73,16 @@ public class StatementService {
             int batchSize = 500; // Можно подобрать оптимальный размер
             
             // Удаляем старые заявления за выбранную дату
-            statementRepository.deleteByImportDate(selectedDate.toString());
+            deleteStatementsByImportDate(selectedDate.toString());
             
+            // Заполните кэш существующими институтами и направлениями:
+            for (Institute inst : instituteRepository.findAll()) {
+                instituteCache.put(inst.getName(), inst);
+            }
+            for (TrainingDirection dir : trainingDirectionRepository.findAll()) {
+                directionCache.put(dir.getName() + "|" + dir.getInstitute().getName(), dir);
+            }
+
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 int rowNum = row.getRowNum();
@@ -86,43 +98,40 @@ public class StatementService {
                     String specialQuota = getCellValueAsString(row.getCell(67));
 
                     // Найти или создать институт
-                    Institute institute = instituteRepository.findByName(instituteName);
+                    Institute institute = instituteCache.get(instituteName);
                     if (institute == null && !instituteName.isEmpty()) {
                         institute = new Institute();
                         institute.setName(instituteName);
                         institute.setLocation("Не указано"); // или другое значение по умолчанию
                         institute = instituteRepository.save(institute);
+                        instituteCache.put(instituteName, institute);
                     }
 
                     // Найти или создать направление и связать с институтом
+                    TrainingDirection trainingDirection = null;
                     if (institute != null && !trainingDirectionName.isEmpty()) {
-                        TrainingDirection trainingDirection = trainingDirectionRepository.findByNameAndInstitute(trainingDirectionName, institute);
+                        String dirKey = trainingDirectionName + "|" + instituteName;
+                        trainingDirection = directionCache.get(dirKey);
                         if (trainingDirection == null) {
                             trainingDirection = new TrainingDirection();
                             trainingDirection.setName(trainingDirectionName);
                             trainingDirection.setInstitute(institute);
-                            trainingDirectionRepository.save(trainingDirection);
+                            trainingDirection = trainingDirectionRepository.save(trainingDirection);
+                            directionCache.put(dirKey, trainingDirection);
                         }
                     }
 
-                    List<Statement> existing = repository.findAllByPersonalNumberAndImportDateAndInstituteAndTrainingDirectionAndCostReimbursementTypeAndTargetedAdmissionAndSeparateQuotaAndSpecialQuota(
-                        personalNumber, importDateValue, instituteName, trainingDirectionName, costReimbursementType, targetedAdmission, separateQuota, specialQuota);
-
                     Statement statement;
-                    if (!existing.isEmpty()) {
-                        statement = existing.get(0);
-                    } else {
-                        statement = new Statement();
-                        statement.setImportDate(importDateValue);
-                        statement.setPersonalNumber(personalNumber);
-                        statement.setInstitute(instituteName);
-                        statement.setTrainingDirection(trainingDirectionName);
-                        statement.setCostReimbursementType(costReimbursementType);
-                        statement.setTargetedAdmission(targetedAdmission);
-                        statement.setSeparateQuota(separateQuota);
-                        statement.setSpecialQuota(specialQuota);
-                    }
-                    
+                    statement = new Statement();
+                    statement.setImportDate(importDateValue);
+                    statement.setPersonalNumber(personalNumber);
+                    statement.setInstitute(instituteName);
+                    statement.setTrainingDirection(trainingDirectionName);
+                    statement.setCostReimbursementType(costReimbursementType);
+                    statement.setTargetedAdmission(targetedAdmission);
+                    statement.setSeparateQuota(separateQuota);
+                    statement.setSpecialQuota(specialQuota);
+                
                     // Получаем ФИО абитуриента из нужной колонки (например, пусть это колонка 11)
                     String fullName = getCellValueAsString(row.getCell(1));
                     statement.setFullName(fullName);
@@ -441,5 +450,10 @@ public class StatementService {
         // Предполагается, что в таблице Statement есть поле типа LocalDate или Date, например, "createdDate"
         // Получаем уникальные даты из базы, сортируем по возрастанию
         return statementRepository.findDistinctDates();
+    }
+
+    @Transactional
+    public void deleteStatementsByImportDate(String importDate) {
+        statementRepository.deleteByImportDate(importDate);
     }
 }
