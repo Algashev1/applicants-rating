@@ -10,6 +10,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
@@ -49,6 +51,7 @@ public class StatementService {
 
     // Импорт заявлений с проверкой по ключевым полям.
     // Если при обработке строки возникает ошибка, она фиксируется, и после импорта выбрасывается исключение с подробностями.
+    @Transactional
     public void importStatements(MultipartFile file, LocalDate selectedDate) {
         StringBuilder errorMessages = new StringBuilder();
         List<Statement> allStatements = new ArrayList<>();
@@ -64,6 +67,10 @@ public class StatementService {
             List<Statement> existingStatements = statementRepository.findByImportDate(selectedDate.toString());
             List<Statement> batch = new ArrayList<>();
             int batchSize = 500; // Можно подобрать оптимальный размер
+            
+            // Удаляем старые заявления за выбранную дату
+            statementRepository.deleteByImportDate(selectedDate.toString());
+            
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 int rowNum = row.getRowNum();

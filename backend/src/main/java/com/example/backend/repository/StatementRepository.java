@@ -47,4 +47,6 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
     String findPreviousDate(@Param("date") String date);
 
     List<Statement> findByImportDate(String importDate);
+
+    void deleteByImportDate(String importDate);
 }
