@@ -21,7 +21,7 @@ services:
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: mypassword
       JAVA_TOOL_OPTIONS: -Xmx2g
-
+      JAVA_OPTS: -Xmx1024m
   db:
     image: postgres:15
     restart: always
