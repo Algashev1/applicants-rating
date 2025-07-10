@@ -25,7 +25,6 @@ import com.example.backend.model.DirectionDailyStats;
 import com.example.backend.repository.DirectionDailyStatsRepository;
 import java.util.stream.Collectors;
 import java.util.*;
-import com.monitorjbl.xlsx.StreamingReader;
 
 @Service
 public class StatementService {
@@ -72,10 +71,7 @@ public class StatementService {
         statementRepository.deleteByImportDate(selectedDate.toString());
 
         try (InputStream is = file.getInputStream();
-             Workbook workbook = StreamingReader.builder()
-                 .rowCacheSize(100)    // сколько строк держать в памяти
-                 .bufferSize(4096)     // размер буфера для чтения
-                 .open(is)) {
+             Workbook workbook = new XSSFWorkbook(is)) {
 
             Sheet sheet = workbook.getSheetAt(1);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -130,7 +126,7 @@ public class StatementService {
                     statement.setTargetedAdmission(targetedAdmission);
                     statement.setSeparateQuota(separateQuota);
                     statement.setSpecialQuota(specialQuota);
-                
+
                     // Получаем ФИО абитуриента из нужной колонки (например, пусть это колонка 11)
                     String fullName = getCellValueAsString(row.getCell(1));
                     statement.setFullName(fullName);
@@ -277,18 +273,11 @@ public class StatementService {
                     statement.setKya(getCellValueAsString(row.getCell(137)));
                     // 75) ИТя
                     statement.setIty(getCellValueAsString(row.getCell(138)));
-                    // 76) Статус результатов ЕГЭ
-                    // statement.setEgeStatus(getCellValueAsString(row.getCell(139)));
-                    // 78) Баллы за индивидуальные достижения
-                    // statement.setIndividualAchievementScore(getCellValueAsString(row.getCell(140)));
                     // 79) Сумма баллов за индивидуальные достижения
                     statement.setIndividualAchievementTotal(getCellValueAsString(row.getCell(141)));
-                    // 80) Баллы за индивидуальные достижения, учитываемые как преимущество
-                    // statement.setIndividualAchievementAdvantageScore(getCellValueAsString(row.getCell(142)));
                     // 81) Сумма баллов за индивидуальные достижения, учитываемые как преимущество
                     statement.setIndividualAchievementAdvantageTotal(getCellValueAsString(row.getCell(143)));
-                    
-                    // Сохраняем (создаем или обновляем) запись
+
                     allStatements.add(statement);
 
                     // Подсчёт для DirectionDailyStats
@@ -310,7 +299,6 @@ public class StatementService {
             throw new RuntimeException("Ошибка чтения файла: " + e.getMessage(), e);
         }
         if (errorMessages.length() > 0) {
-            // Если были ошибки при обработке отдельных строк - выбрасываем исключение с подробностями
             throw new RuntimeException("Ошибки при импорте заявлений:\n" + errorMessages.toString());
         }
 
@@ -346,16 +334,14 @@ public class StatementService {
 
         // После чтения всех заявлений в List<Statement> statements
         Map<String, List<Statement>> byApplicant = allStatements.stream()
-            .collect(Collectors.groupingBy(s -> s.getPersonalNumber())); // или getFio(), если нет id
+            .collect(Collectors.groupingBy(s -> s.getPersonalNumber()));
 
         for (List<Statement> applicantStatements : byApplicant.values()) {
-            // Сгруппируем по приоритету и сразу выберем нужное направление
             Map<Integer, String> priorityToDirection = new HashMap<>();
             Map<Integer, List<Statement>> byPriority = applicantStatements.stream()
                 .filter(s -> s.getPriority() != null && !s.getPriority().isEmpty())
                 .collect(Collectors.groupingBy(s -> Integer.parseInt(s.getPriority())));
             for (Map.Entry<Integer, List<Statement>> entry : byPriority.entrySet()) {
-                // Сначала ищем с "Общий конкурс", если нет — берём первое попавшееся
                 String direction = null;
                 for (Statement s : entry.getValue()) {
                     if ("Общий конкурс".equals(s.getAdmissionType())) {
@@ -383,13 +369,13 @@ public class StatementService {
         DataFormatter formatter = new DataFormatter();
         return formatter.formatCellValue(cell).trim();
     }
-    
+
     public List<Statement> getStatementsByPersonalNumber(String personalNumber) {
         return repository.findByPersonalNumber(personalNumber);
     }
 
     public List<Statement> getStatementsForDirection(String directionName, boolean onlyPriorityOne) {
-        String latestDate = repository.findMaxImportDate(); // реализуйте этот метод, чтобы получить последнюю дату
+        String latestDate = repository.findMaxImportDate();
         if (onlyPriorityOne) {
             return repository.findByTrainingDirectionAndImportDateAndPriorityOrderByTotalScoreDesc(directionName, latestDate, "1");
         } else {
@@ -398,10 +384,7 @@ public class StatementService {
     }
 
     public Map<String, Object> getStatementsWithPrevious(String directionName, boolean onlyPriorityOne, String date) {
-        // Получаем текущие заявления за выбранную дату
         List<Statement> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne);
-
-        // Получаем предыдущие заявления (например, за предыдущую дату)
         String previousDate = statementRepository.findPreviousDate(date);
         List<Statement> previous = previousDate != null
             ? statementRepository.findByDirectionAndDate(directionName, previousDate, onlyPriorityOne)
@@ -414,14 +397,11 @@ public class StatementService {
     }
 
     public DirectionStatementsResponse getDirectionStatementsResponse(String instituteName, String directionName, boolean onlyPriorityOne, String date) {
-        // Получаем текущие заявления за выбранную дату
         List<Statement> current = statementRepository.findByDirectionAndDate(directionName, date, onlyPriorityOne);
-        // Получаем предыдущие заявления (например, за предыдущую дату)
         String previousDate = statementRepository.findPreviousDate(date);
         List<Statement> previous = previousDate != null
             ? statementRepository.findByDirectionAndDate(directionName, previousDate, onlyPriorityOne)
             : Collections.emptyList();
-        // Получаем статистику
         int newStatements = 0;
         int withdrawnStatements = 0;
         if (date != null) {
@@ -435,8 +415,6 @@ public class StatementService {
     }
 
     public List<String> getAvailableDates() {
-        // Предполагается, что в таблице Statement есть поле типа LocalDate или Date, например, "createdDate"
-        // Получаем уникальные даты из базы, сортируем по возрастанию
         return statementRepository.findDistinctDates();
     }
 
