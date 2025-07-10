@@ -25,6 +25,7 @@ import com.example.backend.model.DirectionDailyStats;
 import com.example.backend.repository.DirectionDailyStatsRepository;
 import java.util.stream.Collectors;
 import java.util.*;
+import com.monitorjbl.xlsx.StreamingReader;
 
 @Service
 public class StatementService {
@@ -71,7 +72,11 @@ public class StatementService {
         statementRepository.deleteByImportDate(selectedDate.toString());
 
         try (InputStream is = file.getInputStream();
-             Workbook workbook = new XSSFWorkbook(is)) {
+             Workbook workbook = StreamingReader.builder()
+                 .rowCacheSize(100)    // сколько строк держать в памяти
+                 .bufferSize(4096)     // размер буфера для чтения
+                 .open(is)) {
+
             Sheet sheet = workbook.getSheetAt(1);
             Iterator<Row> rowIterator = sheet.iterator();
             // Пропускаем первые 9 строк (заголовки)
