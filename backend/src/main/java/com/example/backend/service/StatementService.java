@@ -55,39 +55,33 @@ public class StatementService {
     public void importStatements(MultipartFile file, LocalDate selectedDate) {
         StringBuilder errorMessages = new StringBuilder();
         List<Statement> allStatements = new ArrayList<>();
-        Map<String, Integer> currentCounts = new HashMap<>(); // <-- перемещено сюда
-        // Перед циклом импорта:
+        Map<String, Integer> currentCounts = new HashMap<>();
         Map<String, Institute> instituteCache = new HashMap<>();
         Map<String, TrainingDirection> directionCache = new HashMap<>();
+
+        // Кэшируем институты и направления
+        for (Institute inst : instituteRepository.findAll()) {
+            instituteCache.put(inst.getName(), inst);
+        }
+        for (TrainingDirection dir : trainingDirectionRepository.findAll()) {
+            directionCache.put(dir.getName() + "|" + dir.getInstitute().getName(), dir);
+        }
+
+        // Удаляем старые заявления за выбранную дату
+        statementRepository.deleteByImportDate(selectedDate.toString());
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(1);
             Iterator<Row> rowIterator = sheet.iterator();
             // Пропускаем первые 9 строк (заголовки)
-            for (int i = 0; i < 9 && rowIterator.hasNext(); i++) {
-                rowIterator.next();
-            }
-            List<Statement> existingStatements = statementRepository.findByImportDate(selectedDate.toString());
-            List<Statement> batch = new ArrayList<>();
-            int batchSize = 500; // Можно подобрать оптимальный размер
-            
-            // Удаляем старые заявления за выбранную дату
-            deleteStatementsByImportDate(selectedDate.toString());
-            
-            // Заполните кэш существующими институтами и направлениями:
-            for (Institute inst : instituteRepository.findAll()) {
-                instituteCache.put(inst.getName(), inst);
-            }
-            for (TrainingDirection dir : trainingDirectionRepository.findAll()) {
-                directionCache.put(dir.getName() + "|" + dir.getInstitute().getName(), dir);
-            }
+            for (int i = 0; i < 9 && rowIterator.hasNext(); i++) rowIterator.next();
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 int rowNum = row.getRowNum();
                 try {
-                    // Получаем ключевые поля для проверки уникальности
+                    // Получаем ключевые поля
                     String personalNumber = getCellValueAsString(row.getCell(31));
                     String instituteName = getCellValueAsString(row.getCell(57));
                     String trainingDirectionName = getCellValueAsString(row.getCell(59));
@@ -290,15 +284,9 @@ public class StatementService {
                     statement.setIndividualAchievementAdvantageTotal(getCellValueAsString(row.getCell(143)));
                     
                     // Сохраняем (создаем или обновляем) запись
-                    batch.add(statement);
                     allStatements.add(statement);
 
-                    if (batch.size() >= batchSize) {
-                        repository.saveAll(batch);
-                        repository.flush();
-                        batch.clear();
-                    }
-
+                    // Подсчёт для DirectionDailyStats
                     if (!instituteName.isEmpty() && !trainingDirectionName.isEmpty()) {
                         String key = instituteName + "|" + trainingDirectionName;
                         currentCounts.put(key, currentCounts.getOrDefault(key, 0) + 1);
@@ -306,22 +294,13 @@ public class StatementService {
                 } catch (Exception ex) {
                     errorMessages.append("Ошибка обработки строки ")
                         .append(rowNum)
-                        .append(" (Личный номер=")
-                        .append(getCellValueAsString(row.getCell(10)))
-                        .append(", институт=")
-                        .append(getCellValueAsString(row.getCell(57)))
-                        .append(", направление=")
-                        .append(getCellValueAsString(row.getCell(58)))
-                        .append("): ")
+                        .append(": ")
                         .append(ex.getMessage())
                         .append("\n");
                 }
             }
-            // Сохраняем оставшиеся
-            if (!batch.isEmpty()) {
-                repository.saveAll(batch);
-                repository.flush();
-            }
+            // Сохраняем все заявления одним вызовом
+            repository.saveAll(allStatements);
         } catch (Exception e) {
             throw new RuntimeException("Ошибка чтения файла: " + e.getMessage(), e);
         }
@@ -329,7 +308,8 @@ public class StatementService {
             // Если были ошибки при обработке отдельных строк - выбрасываем исключение с подробностями
             throw new RuntimeException("Ошибки при импорте заявлений:\n" + errorMessages.toString());
         }
-        // После импорта всех заявлений считаем новые и забранные
+
+        // DirectionDailyStats — bulk save
         String previousDate = statementRepository.findPreviousDate(selectedDate.toString());
         Map<String, Integer> previousCounts = new HashMap<>();
         if (previousDate != null) {
@@ -339,6 +319,7 @@ public class StatementService {
                 previousCounts.put(key, previousCounts.getOrDefault(key, 0) + 1);
             }
         }
+        List<DirectionDailyStats> statsBatch = new ArrayList<>();
         for (String key : currentCounts.keySet()) {
             int current = currentCounts.getOrDefault(key, 0);
             int prev = previousCounts.getOrDefault(key, 0);
@@ -354,8 +335,10 @@ public class StatementService {
             stats.setImportDate(selectedDate.toString());
             stats.setNewStatements(newStatements);
             stats.setWithdrawnStatements(withdrawnStatements);
-            directionDailyStatsRepository.save(stats);
+            statsBatch.add(stats);
         }
+        directionDailyStatsRepository.saveAll(statsBatch);
+
         // После чтения всех заявлений в List<Statement> statements
         Map<String, List<Statement>> byApplicant = allStatements.stream()
             .collect(Collectors.groupingBy(s -> s.getPersonalNumber())); // или getFio(), если нет id
